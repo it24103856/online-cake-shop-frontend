@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Package, LogOut, User as UserIcon, CreditCard } from "lucide-react"; // CreditCard අයිකනය එක් කරන ලදී
+import { ChevronDown, Package, LogOut, User as UserIcon, CreditCard, Calendar } from "lucide-react"; 
 
 export default function UserData() {
     const [user, setUser] = useState(null);
@@ -35,7 +35,6 @@ export default function UserData() {
         window.location.href = "/login";
     };
 
-    // My Bookings ලෙස වෙනස් කරන ලදී
     const handleBookings = () => {
         if (user && user._id) {
             window.location.href = `/my-orders/${user._id}`;
@@ -44,7 +43,15 @@ export default function UserData() {
         }
     };
 
-    // My Payments සඳහා නව Function එකක්
+    const handleDelivery = () => {
+        if (user && user._id) {
+            // ඔබේ Route එකට අනුව මෙය වෙනස් කරගන්න (උදා: /track/:id)
+            window.location.href = `/my-delivery/${user._id}`;
+        } else {
+            window.location.href = "/my-delivery";
+        }
+    };
+
     const handlePayments = () => {
         window.location.href = "/my-payments";
     };
@@ -110,7 +117,7 @@ export default function UserData() {
                             </div>
 
                             <div className="p-2">
-                                {/* My Bookings (කලින් My Orders) */}
+                                {/* My Orders */}
                                 <button 
                                     onClick={handleBookings}
                                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl transition-all group"
@@ -119,7 +126,7 @@ export default function UserData() {
                                     <span className="font-medium">My Orders</span>
                                 </button>
 
-                                {/* My Payments - අලුතින් එක් කරන ලදී */}
+                                {/* My Payments */}
                                 <button 
                                     onClick={handlePayments}
                                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl transition-all group"
@@ -128,6 +135,16 @@ export default function UserData() {
                                     <span className="font-medium">My Payments</span>
                                 </button>
 
+                                {/* My Delivery */}
+                                <button 
+                                    onClick={handleDelivery}
+                                    className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl transition-all group"
+                                >
+                                    <Calendar size={18} className="group-hover:scale-110 transition-transform" />
+                                    <span className="font-medium">My Delivery</span>
+                                </button>
+
+                                {/* Account Info */}
                                 <button 
                                     onClick={handleProfile}
                                     className="w-full flex items-center gap-3 px-4 py-3 text-sm text-gray-600 hover:bg-cyan-50 hover:text-cyan-600 rounded-xl transition-all group"

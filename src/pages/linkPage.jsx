@@ -15,6 +15,8 @@ import AccessoriesOverview from "../components/AccessoriesOverview";
 import PaymentPage from "./PaymentPage";
 import MyPayments from "./MyPayments";
 import FeedbackForm from "./Feedback";
+import DriverDashboard from "./DriverDashboard"
+import CustomerTrack from "../components/CustomerTrack";
 
 
 export default function LinkPage() {
@@ -37,6 +39,8 @@ export default function LinkPage() {
                     <Route path="/payment" element={<PaymentPage />} />
                     <Route path="/my-payments" element={<MyPayments />} />
                     <Route path="/feedback" element={<FeedbackForm />} />
+                    <Route path="/driver" element={<DriverDashboard/>}/>
+                    <Route path="/my-delivery/:userId" element={<CustomerTrack />} />
 
                 </Routes>
             </main>

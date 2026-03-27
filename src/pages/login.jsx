@@ -11,7 +11,18 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Google Login Logic
+  const handleRedirect = (role) => {
+    const userRole = role.toLowerCase();
+    
+    if (userRole === "admin") {
+      navigate("/admin");
+    } else if (userRole === "driver") {
+      navigate("/driver/dashboard");
+    } else {
+      navigate("/");
+    }
+  };
+
   const GoogleLogin = useGoogleLogin({
     flow: "implicit",
     onSuccess: (response) => {
@@ -22,7 +33,9 @@ export default function LoginPage() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         localStorage.setItem("role", res.data.role);
-        res.data.role === "admin" ? navigate("/admin") : navigate("/");
+
+        handleRedirect(res.data.role);
+        
         toast.success("Welcome to the Sweet Journey!");
       }).catch((err) => {
         toast.error("Google Login Failed");
@@ -31,7 +44,6 @@ export default function LoginPage() {
     onError: () => { toast.error("Google Login Failed"); }
   });
 
-  // Manual Login Logic
   async function login(e) {
     if (e) e.preventDefault();
     setIsLoading(true);
@@ -45,7 +57,8 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(res.data.user));
       localStorage.setItem("role", res.data.role);
       
-      res.data.role === "admin" ? navigate("/admin") : navigate("/");
+      handleRedirect(res.data.role);
+
       toast.success("Ready for something sweet?");
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
@@ -56,19 +69,15 @@ export default function LoginPage() {
 
   return (
     <main className="w-full min-h-screen bg-[#0A0A0A] flex items-center justify-center relative overflow-hidden px-6 ">
-      
-      {/* Dynamic Background Image - Luxury Cake Theme */}
       <div 
         className="absolute inset-0 opacity-40 bg-cover bg-center bg-no-repeat grayscale-[0.5] scale-110"
         style={{ backgroundImage: "url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2000&auto=format&fit=crop')" }}
       ></div>
 
-      {/* Luxury Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
 
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mx-auto gap-16">
 
-        {/* Left Side: Brand Identity */}
         <div className="text-center md:text-left max-w-[600px]">
           <div className="flex items-center gap-3 mb-8 justify-center md:justify-start">
              <div className="w-12 h-12 bg-[#00AEEF] rounded-full flex items-center justify-center font-black text-black italic">C</div>
@@ -85,9 +94,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Right Side: Luxury Glassmorphism Form */}
         <div className="w-full max-w-[440px] relative">
-            {/* Decorative element */}
             <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#00AEEF]/20 blur-[80px] rounded-full"></div>
             
             <form onSubmit={login} className="relative bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.5)] p-12 flex flex-col">
