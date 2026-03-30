@@ -10,7 +10,7 @@ export default function Footer() {
         {/* 1. About section */}
         <div>
           <h2 className="text-2xl font-bold text-white mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
-            Crave<span className="text-[#00AEEF]">Luxury</span>
+            Better<span className="text-[#00AEEF]">Bar</span>
           </h2>
           <p className="text-sm leading-7 text-gray-400">
             Your ultimate travel companion, providing the best destinations and luxury experiences across Sri Lanka.

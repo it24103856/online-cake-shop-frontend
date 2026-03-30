@@ -77,7 +77,7 @@ export default function RegisterPage() {
                 <div className="text-center md:text-left max-w-[550px]">
                     <div className="flex items-center gap-3 mb-8 justify-center md:justify-start">
                         <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center font-black text-rose-500 italic text-xl shadow-lg">C</div>
-                        <span className="text-white font-black uppercase tracking-[0.4em] text-sm drop-shadow-md">Crave Luxury</span>
+                        <span className="text-white font-black uppercase tracking-[0.4em] text-sm drop-shadow-md">Better bar</span>
                     </div>
 
                     <h1

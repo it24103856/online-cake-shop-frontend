@@ -28,7 +28,7 @@ export default function Header() {
       <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.location.href="/"}>
         <img src="/logo.jpg" alt="Logo" className="w-10 h-10 object-contain" />
         <span className="text-white font-bold text-2xl tracking-wide" style={{ fontFamily: "'Playfair Display', serif" }}>
-          Crave<span className="text-[#00AEEF]">Luxury</span>
+          Better <span className="text-[#00AEEF]">Bar</span>
         </span>
       </div>
 
