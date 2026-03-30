@@ -6,22 +6,22 @@ import { Star, Send, Loader2, Package, Cake, MessageSquare } from "lucide-react"
 export default function Feedback() {
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState("");
-    const [category, setCategory] = useState("cake"); // Schema enum එකට අනුව 'cake' default ලෙස තබා ඇත
+    const [category, setCategory] = useState("cake"); // Set 'cake' as default based on schema enum
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Validation: Rating එකක් තෝරා තිබිය යුතුමයි
+        // Validation: A rating must be selected
         if (rating === 0) return toast.error("Please select a rating star");
         
         setLoading(true);
         try {
             const token = localStorage.getItem("token");
             
-            // Backend Controller එක බලාපොරොත්තු වන දත්ත ව්‍යුහය (Request Body)
+            // Data structure expected by backend controller (request body)
             const feedbackData = {
-                feedback: comment,    // Schema එකේ field එක 'feedback' බැවින්
+                feedback: comment,    // Schema field name is 'feedback'
                 rating: Number(rating),
                 category: category    // Enum values: "cake", "acessories", "All"
             };
@@ -38,13 +38,13 @@ export default function Feedback() {
 
             toast.success(response.data.message || "Feedback submitted successfully!");
             
-            // Form එක reset කිරීම
+            // Reset form
             setRating(0);
             setComment("");
             setCategory("cake");
             
         } catch (err) {
-            // Backend එකෙන් එන enum validation errors මෙතැනින් පෙන්වයි
+            // Show enum validation errors from backend here
             const errorMsg = err.response?.data?.error || err.response?.data?.message || "Failed to send feedback";
             console.error("Submission Error:", errorMsg);
             toast.error(errorMsg);
@@ -54,7 +54,7 @@ export default function Feedback() {
     };
 
     return (
-        <div className="min-h-screen pt-32 pb-12 px-4 bg-[#FAFAFA]">
+        <div className="min-h-screen pt-32 pb-12 px-4 bg-[#FDF8F0]">
             <div className="max-w-xl mx-auto">
                 <form onSubmit={handleSubmit} className="bg-white p-8 md:p-12 rounded-[3rem] shadow-2xl border border-rose-50">
                     <div className="text-center mb-10">

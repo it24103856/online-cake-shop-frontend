@@ -22,7 +22,7 @@ export default function AdminCakePage() {
                 }
             });
             
-            // Backend එකෙන් එන්නේ { success: true, data: [...] } නිසා response.data.data ලබාගත යුතුයි
+            // Backend returns { success: true, data: [...] }, so use response.data.data
             if (response.data && response.data.success) {
                 setCakes(response.data.data);
             } else {
@@ -30,9 +30,9 @@ export default function AdminCakePage() {
             }
         } catch (error) {
             if (error.response?.status === 401) {
-                toast.error("සැසිය අවසන් වී ඇත. කරුණාකර නැවත Log වන්න.");
+                toast.error("Session has expired. Please log in again.");
             } else {
-                toast.error("දත්ත ලබා ගැනීමට නොහැකි විය.");
+                toast.error("Unable to fetch data.");
             }
             console.error("Fetch Error:", error);
             setCakes([]);
@@ -42,16 +42,16 @@ export default function AdminCakePage() {
     };
 
     const handleDelete = async (cakeId) => {
-        if (window.confirm("මෙම නිර්මාණය ගැලරියෙන් ඉවත් කිරීමට ඔබට සහතිකද?")) {
-            const toastId = toast.loading("ඉවත් කරමින් පවතී...");
+        if (window.confirm("Are you sure you want to remove this design from the gallery?")) {
+            const toastId = toast.loading("Removing...");
             try {
                 await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/cakes/${cakeId}`, {
                     headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
                 });
-                toast.success("සාර්ථකව ඉවත් කළා!", { id: toastId });
+                toast.success("Removed successfully!", { id: toastId });
                 fetchCakes(); 
             } catch (error) {
-                toast.error("ඉවත් කිරීම අසාර්ථකයි.", { id: toastId });
+                toast.error("Failed to remove.", { id: toastId });
             }
         }
     };

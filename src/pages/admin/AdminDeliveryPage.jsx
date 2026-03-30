@@ -34,13 +34,13 @@ export default function AdminDeliveryPage() {
             const validOrders = (orderRes.data?.data || []).filter(o => !alreadyAssignedIds.includes(o._id.toString()));
             setOrders(validOrders);
         } catch (error) {
-            toast.error("දත්ත ලබාගැනීම අසාර්ථකයි");
+            toast.error("Failed to fetch data");
         } finally { setLoading(false); }
     };
 
     useEffect(() => { loadData(); }, []);
 
-    // --- Admin හට Status එක Manual වෙනස් කිරීමට ඇති Function එක ---
+    // --- Function to manually update status by admin ---
     const handleStatusUpdate = async (deliveryId, newStatus) => {
         try {
             await axios.put(`${BASE_URL}/deliveries/update/${deliveryId}`, 
@@ -48,7 +48,7 @@ export default function AdminDeliveryPage() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             toast.success(`Status updated to ${newStatus}`);
-            loadData(); // Table එක refresh කිරීම
+            loadData(); // Refresh table
         } catch (error) {
             toast.error("Status update failed");
         }
@@ -56,7 +56,7 @@ export default function AdminDeliveryPage() {
 
     const handleAssign = async (e) => {
         e.preventDefault();
-        if (!formData.driverPhone) return toast.error("දුරකථන අංකය ඇතුළත් කරන්න");
+        if (!formData.driverPhone) return toast.error("Please enter phone number");
 
         setSubmitting(true);
         try {
@@ -67,7 +67,7 @@ export default function AdminDeliveryPage() {
                 estimatedDeliveryTime: formData.estimatedTime
             };
             await axios.post(`${BASE_URL}/deliveries/assign`, payload, { headers: { Authorization: `Bearer ${token}` } });
-            toast.success("ඩිලිවරි එක පවරන ලදී!");
+            toast.success("Delivery assigned successfully!");
             setFormData({ orderID: "", driverName: "", driverPhone: "", vehicleNumber: "", estimatedTime: "" });
             loadData(); 
         } catch (error) { toast.error("Assignment failed"); }
@@ -137,7 +137,7 @@ export default function AdminDeliveryPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            {/* Proof Animation - පින්තූරයක් තිබේ නම් පමණක් පෙන්වයි */}
+                                            {/* Proof animation - show only when an image exists */}
                                             {item.image && (
                                                 <span className="relative flex h-3 w-3">
                                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

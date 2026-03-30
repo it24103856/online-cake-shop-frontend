@@ -24,7 +24,7 @@ export default function MyPayments() {
             setLoading(true);
             const token = localStorage.getItem("token");
             
-            // Backend එකට අදාළ නිවැරදි URL එක භාවිතා කරන්න
+            // Use the correct backend URL
             const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/payments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -34,19 +34,19 @@ export default function MyPayments() {
             }
         } catch (error) {
             console.error("Fetch Error:", error);
-            toast.error("ගෙවීම් විස්තර ලබා ගැනීමට නොහැකි විය.");
+            toast.error("Unable to fetch payment details.");
         } finally {
             setLoading(false);
         }
     };
 
-    // --- වැදගත්: TypeError එක වළක්වන Search Logic එක ---
+    // --- Important: Search logic that prevents TypeError ---
     const filteredPayments = payments.filter(p => {
-        // orderID එක Object එකක් නම් එහි _id එක ගන්න, නැත්නම් කෙලින්ම අගය ගන්න
+        // If orderID is an object, use _id; otherwise use the direct value
         const orderIdValue = typeof p.orderID === 'object' ? p.orderID?._id : p.orderID;
         const refValue = p.referenceNumber || "";
 
-        // ආරක්ෂිතව string එකක් බවට පත් කර සෙවීම සිදු කිරීම
+        // Safely convert to string before searching
         const searchStr = searchTerm.toLowerCase();
         return (
             orderIdValue?.toString().toLowerCase().includes(searchStr) ||
@@ -86,7 +86,7 @@ export default function MyPayments() {
     }
 
     return (
-        <main className="bg-[#FCFCFC] min-h-screen py-10 px-4 sm:px-8 ">
+        <main className="bg-[#FDF8F0] min-h-screen py-10 px-4 sm:px-8 ">
             <div className="max-w-6xl mx-auto">
                 
                 {/* Header Section */}

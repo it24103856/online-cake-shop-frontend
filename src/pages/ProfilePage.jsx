@@ -39,7 +39,7 @@ export default function ProfilePage() {
                     {/* 2. Overlapping Card */}
                     <div className="bg-white rounded-[40px] shadow-2xl -mt-32 p-12 text-center relative z-10 border border-gray-100">
                         
-                        {/* Profile Photo (මැදට සහ ලොකුවට) */}
+                        {/* Profile Photo (centered and larger) */}
                         <div className="absolute left-1/2 -translate-x-1/2 -top-24">
                             <div className="w-48 h-48 rounded-full border-[8px] border-white shadow-2xl overflow-hidden bg-white">
                                 <img 
@@ -85,7 +85,7 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* Edit Button at Bottom (මැදට) */}
+                        {/* Edit Button at Bottom (centered) */}
                         <div className="mt-14">
                             <button 
                                 onClick={() => setIsEditOpen(true)}

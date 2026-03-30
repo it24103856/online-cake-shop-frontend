@@ -80,7 +80,7 @@ export default function HomePage() {
           <div className="absolute inset-0 z-0">
             <img
               src="/hompage.jpg"
-              className="w-full h-full object-cover opacity-30"
+              className="w-full h-full object-cover opacity-60"
               alt="Luxury Cake"
             />
           </div>

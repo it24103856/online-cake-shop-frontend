@@ -22,7 +22,7 @@ export default function ShopPage() {
             }
         } catch (err) {
             console.error(err);
-            setError("අපිට දත්ත ලබා ගැනීමට අපහසු වුණා. කරුණාකර නැවත උත්සාහ කරන්න.");
+            setError("We could not fetch data. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -39,7 +39,7 @@ export default function ShopPage() {
 
     return (
         <>
-            <main className="bg-[#FAFAFA] min-h-screen font-sans ">
+            <main className="bg-[#FDF8F0] min-h-screen font-sans ">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 md:py-20">
                     
                     {/* Header Section */}

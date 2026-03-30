@@ -19,7 +19,7 @@ export default function AdminAccessoriesUpdatePage() {
     const [preview, setPreview] = useState(null);
     const [imageFile, setImageFile] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [isFetching, setIsFetching] = useState(true); // දත්ත load වන තුරු පෙන්වීමට
+    const [isFetching, setIsFetching] = useState(true); // Show while data is loading
 
     const categories = ['Candles', 'Toppers', 'Cards', 'Balloons', 'Other'];
 
@@ -29,7 +29,7 @@ export default function AdminAccessoriesUpdatePage() {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/accessories/${id}`);
                 
-                // Backend එකෙන් success: true සහ data: { item } ලෙස එන නිසා:
+                // Backend returns success: true and data: { item }
                 const item = response.data.data;
 
                 if (item) {
@@ -40,11 +40,11 @@ export default function AdminAccessoriesUpdatePage() {
                         description: item.description || '',
                         category: item.category || 'Other'
                     });
-                    // පින්තූරය පෙන්වීමට preview එක සකසන්න
+                    // Set preview image for display
                     setPreview(item.image?.[0] || item.Image?.[0] || null);
                 }
             } catch (error) {
-                toast.error("Accessory දත්ත ලබාගැනීමට නොහැකි විය.");
+                toast.error("Unable to fetch accessory data.");
                 console.error(error);
             } finally {
                 setIsFetching(false);
@@ -73,7 +73,7 @@ export default function AdminAccessoriesUpdatePage() {
         try {
             let finalImageUrl = preview;
             
-            // නව පින්තූරයක් තෝරා ඇත්නම් පමණක් එය Upload කරන්න
+            // Upload only when a new image is selected
             if (imageFile) {
                 finalImageUrl = await uploadFile(imageFile);
             }

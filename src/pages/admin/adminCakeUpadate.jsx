@@ -18,13 +18,22 @@ export default function AdminCakeUpdatePage() {
     useEffect(() => {
         const fetchCake = async () => {
             try {
-                const { data } = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/cakes/${id}`);
-                setFormData({
-                    name: data.name, altName: data.altName, description: data.description,
-                    price: data.price, category: data.category, flavor: data.flavor,
-                    weight: data.weight, quantity: data.quantity
+                const token = localStorage.getItem('token');
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/cakes/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
                 });
-                setPreview(data.Image?.[0]); // Schema එකේ තියෙන්නේ Image (Array)
+                const cakeData = response.data?.data || response.data;
+
+                if (!cakeData) {
+                    throw new Error('Cake data not found');
+                }
+
+                setFormData({
+                    name: cakeData.name || '', altName: cakeData.altName || '', description: cakeData.description || '',
+                    price: cakeData.price || '', category: cakeData.category || '', flavor: cakeData.flavor || '',
+                    weight: cakeData.weight || '', quantity: cakeData.quantity || ''
+                });
+                setPreview(cakeData.Image?.[0] || null); // Schema stores Image as an array
             } catch (error) {
                 toast.error("Error loading cake data.");
             }

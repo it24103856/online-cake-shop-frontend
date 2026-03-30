@@ -26,7 +26,7 @@ export default function CustomerTrackByEmail() {
                     setCurrentUserEmail(res.data.currentUserEmail);
                 }
             } catch (error) {
-                toast.error("දත්ත ලබා ගැනීමේදී දෝෂයක් සිදුවිය.");
+                toast.error("An error occurred while fetching data.");
             } finally {
                 setLoading(false);
             }

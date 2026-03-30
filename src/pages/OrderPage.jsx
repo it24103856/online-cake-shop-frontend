@@ -91,7 +91,7 @@ export default function OrderPage() {
 
     const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
-    // --- ප්‍රධාන වෙනස මෙතැනයි ---
+    // --- Main change is here ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -99,7 +99,7 @@ export default function OrderPage() {
         const orderData = {
             customer: {
                 name: formData.name,
-                email: "customer@example.com", // මෙතැනට user email එක ලබාගන්න
+                email: "customer@example.com", // Get user email here
                 phone: formData.phone,
                 address: `${formData.address}, ${formData.city}`
             },
@@ -115,7 +115,7 @@ export default function OrderPage() {
             })),
             totalPrice: total,
             status: "pending",
-            paymentMethod: 'Bank Transfer', // Default එකක් ලෙස
+            paymentMethod: 'Bank Transfer', // As default
             notes: formData.notes
         };
 
@@ -130,11 +130,11 @@ export default function OrderPage() {
             if (response.data.success) {
                 toast.success("Order details saved! Redirecting to payment...");
                 
-                // localStorage එකෙන් Cart එක අයින් කරන්න (Order එක saved නිසා)
+                // Remove cart from localStorage (order already saved)
                 localStorage.removeItem("cart");
 
-                // සාර්ථකව order එක වැටුනාට පස්සේ Payment Page එකට navigate කරනවා
-                // ඒ සමඟම Order ID එක සහ Total Amount එක state එකක් ලෙස යවනවා
+                // After successful order placement, navigate to Payment Page
+                // Also send Order ID and Total Amount in state
                 navigate("/payment", { 
                     state: { 
                         orderID: response.data.data._id, 
@@ -152,7 +152,7 @@ export default function OrderPage() {
 
     return (
         <>
-        <main className="bg-[#FAFAFA] min-h-screen ">
+        <main className="bg-[#FDF8F0] min-h-screen ">
             <div className="max-w-6xl mx-auto px-6 py-16">
                 <h1 className="text-4xl font-serif font-bold mb-10 text-neutral-900 italic">Checkout Details</h1>
                 

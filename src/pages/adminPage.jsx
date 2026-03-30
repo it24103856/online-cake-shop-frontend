@@ -49,7 +49,7 @@ export default function AdminPage() {
     };
 
     if (isLoading) return (
-        <div className="h-screen flex flex-col items-center justify-center bg-[#FDFDFD]">
+        <div className="h-screen flex flex-col items-center justify-center bg-[#FDF8F0]">
             <div className="relative">
                 <div className="h-16 w-16 rounded-full border-4 border-gray-100 border-t-[#00AEEF] animate-spin"></div>
                 <ShieldCheck className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[#00AEEF]" size={24} />
@@ -170,7 +170,7 @@ export default function AdminPage() {
                                             <h3 className="text-2xl font-bold text-gray-900 mb-3">Health Check</h3>
                                             <p className="text-gray-500 leading-relaxed font-medium italic">"System nodes are responding within normal parameters. 100% uptime maintained."</p>
                                         </div>
-                                        {/* තව Cards මෙහි එක් කරන්න */}
+                                        {/* Add more cards here */}
                                     </div>
                                 </div>
                             } />

@@ -24,12 +24,12 @@ export default function AccessoryDetailPage() {
                     setAccessory(data);
                     setActiveImg(data.image?.[0] || data.Image?.[0] || "");
                 } else {
-                    toast.error("මෙම අයිතමය සොයාගත නොහැක.");
+                    toast.error("This item could not be found.");
                     navigate("/accessories");
                 }
             } catch (error) {
                 console.error(error);
-                toast.error("විස්තර ලබා ගැනීමට අපහසු වුණා.");
+                toast.error("Failed to load details.");
                 navigate("/accessories");
             } finally {
                 setLoading(false);
@@ -49,10 +49,10 @@ export default function AccessoryDetailPage() {
                 cart.push({ ...accessory, quantity, type: 'accessory' });
             }
             localStorage.setItem("cart", JSON.stringify(cart));
-            toast.success(`${accessory.name} කූඩයට එකතු කළා!`);
+            toast.success(`${accessory.name} added to cart!`);
             navigate("/order");
         } catch (error) {
-            toast.error("යම් දෝෂයක් සිදු වුණා.");
+            toast.error("Something went wrong.");
         } finally {
             setAddingToCart(false);
         }

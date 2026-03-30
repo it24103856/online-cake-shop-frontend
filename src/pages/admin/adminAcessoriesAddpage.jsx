@@ -10,14 +10,14 @@ export default function AdminAcessoriesAddpage() {
         price: '',
         quantity: '',
         description: '',
-        category: 'Other' // Default අගය
+        category: 'Other' // Default value
     });
     const [imageFile, setImageFile] = useState(null);
     const [preview, setPreview] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Schema එකේ ඇති enum අගයන්
+    // Enum values from schema
     const categories = ['Candles', 'Toppers', 'Cards', 'Balloons', 'Other'];
 
     const handleChange = (e) => {
@@ -48,7 +48,7 @@ export default function AdminAcessoriesAddpage() {
                 ...formData,
                 price: parseFloat(formData.price),
                 quantity: parseInt(formData.quantity),
-                image: [imageUrl], // 'Image' නොව 'image' ලෙස Schema එකට අනුව නිවැරදි කළා
+                image: [imageUrl], // Corrected to 'image' (not 'Image') per schema
             };
 
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/accessories`, payload, {

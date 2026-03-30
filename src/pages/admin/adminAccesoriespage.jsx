@@ -20,7 +20,7 @@ export default function AdminAccessoriesPage() {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
-            // Backend එකෙන් success: true, data: items ලෙස එවන නිසා:
+            // Backend returns success: true and data: items
             if (response.data && response.data.success) {
                 setAccessories(response.data.data || []);
             } else {

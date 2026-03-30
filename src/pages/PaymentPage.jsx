@@ -7,7 +7,7 @@ import {
     CheckCircle, AlertCircle, Loader2, ArrowLeft,
     ShieldCheck, Banknote, Sparkles
 } from "lucide-react";
-// ඔබේ supabase file එක ඇති path එක මෙතැනට ලබා දෙන්න
+// Provide the path to your Supabase file here
 import { uploadFile } from "../utils/meadiaUpload"; 
 
 export default function PaymentPage() {
@@ -16,7 +16,7 @@ export default function PaymentPage() {
     
     const [method, setMethod] = useState(""); 
     const [loading, setLoading] = useState(false);
-    const [receiptFile, setReceiptFile] = useState(null); // මුළු File එකම තබා ගැනීමට
+    const [receiptFile, setReceiptFile] = useState(null); // Keep the full file object
     const [referenceNumber, setReferenceNumber] = useState("");
 
     const orderID = state?.orderID;
@@ -46,7 +46,7 @@ export default function PaymentPage() {
         try {
             let finalReceiptUrl = null;
 
-            // 1. බැංකු හුවමාරුවක් නම් සහ රිසිට් එකක් තෝරා ඇත්නම් Supabase එකට upload කිරීම
+            // 1. If bank transfer is selected and receipt exists, upload to Supabase
             if (method === 'Bank Transfer') {
                 if (!receiptFile || !referenceNumber) {
                     toast.error("Please provide both reference number and receipt image.");
@@ -65,13 +65,13 @@ export default function PaymentPage() {
                 }
             }
 
-            // 2. Backend එකට දත්ත යැවීම
+            // 2. Send data to backend
             const paymentData = {
                 orderID,
                 paymentMethod: method,
                 amount: totalAmount,
                 referenceNumber: referenceNumber || "N/A",
-                receiptImage: finalReceiptUrl, // මෙහි යන්නේ Supabase URL එක
+                receiptImage: finalReceiptUrl, // This should be the Supabase URL
             };
 
             const token = localStorage.getItem("token");
@@ -94,7 +94,7 @@ export default function PaymentPage() {
     };
 
     return (
-        <main className="bg-[#FCFCFC] min-h-screen py-12 px-4 sm:px-6 ">
+        <main className="bg-[#FDF8F0] min-h-screen py-12 px-4 sm:px-6 ">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">

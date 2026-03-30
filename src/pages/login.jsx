@@ -13,14 +13,9 @@ export default function LoginPage() {
 
   const handleRedirect = (role) => {
     const userRole = role.toLowerCase();
-    
-    if (userRole === "admin") {
-      navigate("/admin");
-    } else if (userRole === "driver") {
-      navigate("/driver/dashboard");
-    } else {
-      navigate("/");
-    }
+    if (userRole === "admin") navigate("/admin");
+    else if (userRole === "driver") navigate("/driver/dashboard");
+    else navigate("/");
   };
 
   const GoogleLogin = useGoogleLogin({
@@ -33,11 +28,9 @@ export default function LoginPage() {
         localStorage.setItem("token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
         localStorage.setItem("role", res.data.role);
-
         handleRedirect(res.data.role);
-        
         toast.success("Welcome to the Sweet Journey!");
-      }).catch((err) => {
+      }).catch(() => {
         toast.error("Google Login Failed");
       }).finally(() => { setIsLoading(false); });
     },
@@ -48,17 +41,11 @@ export default function LoginPage() {
     if (e) e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post(import.meta.env.VITE_BACKEND_URL + "/users/login", {
-        email,
-        password,
-      });
-
+      const res = await axios.post(import.meta.env.VITE_BACKEND_URL + "/users/login", { email, password });
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
       localStorage.setItem("role", res.data.role);
-      
       handleRedirect(res.data.role);
-
       toast.success("Ready for something sweet?");
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
@@ -68,104 +55,133 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="w-full min-h-screen bg-[#0A0A0A] flex items-center justify-center relative overflow-hidden px-6 ">
-      <div 
-        className="absolute inset-0 opacity-40 bg-cover bg-center bg-no-repeat grayscale-[0.5] scale-110"
-        style={{ backgroundImage: "url('https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2000&auto=format&fit=crop')" }}
-      ></div>
+    <main className="w-full min-h-screen flex items-center justify-center relative overflow-hidden px-6">
 
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+      {/* Background image — full opacity, clearly visible */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=2000&auto=format&fit=crop"
+          className="w-full h-full object-cover"
+          alt=""
+        />
+      </div>
+
+      {/* Rose tint layer */}
+      <div className="absolute inset-0 z-[1] bg-rose"></div>
+
+      {/* Bottom fade for readability */}
+      <div className="absolute inset-0 z-[2] bg-gradient-to-t from-rose-100/60 via-transparent to-transparent"></div>
 
       <div className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full max-w-7xl mx-auto gap-16">
 
+        {/* Left — Brand Identity */}
         <div className="text-center md:text-left max-w-[600px]">
           <div className="flex items-center gap-3 mb-8 justify-center md:justify-start">
-             <div className="w-12 h-12 bg-[#00AEEF] rounded-full flex items-center justify-center font-black text-black italic">C</div>
-             <span className="text-white font-black uppercase tracking-[0.5em] text-sm">Crave Luxury</span>
+            <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center font-black text-rose-500 italic text-xl shadow-lg">C</div>
+            <span className="text-white font-black uppercase tracking-[0.4em] text-sm drop-shadow-md">Crave Luxury</span>
           </div>
-          
-          <h1 className="text-white font-black text-6xl md:text-8xl leading-[0.9] italic uppercase tracking-tighter drop-shadow-2xl">
-            Bake the <br /> 
-            <span className="text-[#00AEEF]">Impossible.</span>
+
+          <h1
+            className="font-black text-6xl md:text-8xl leading-[0.95] italic uppercase tracking-tighter drop-shadow-lg text-white"
+            style={{ fontFamily: "'Playfair Display', serif" }}
+          >
+            Bake the <br />
+            <span className="text-rose-100">Impossible.</span>
           </h1>
-          
-          <p className="mt-8 text-gray-400 text-lg font-light tracking-[0.2em] uppercase italic max-w-md">
+
+          <p className="mt-8 text-white/90 text-lg font-light tracking-[0.15em] uppercase italic max-w-md drop-shadow">
             "Elevating every celebration with a touch of antigravity elegance."
           </p>
+
+          <div className="w-24 h-0.5 bg-white/60 mt-8 mx-auto md:mx-0"></div>
         </div>
 
-        <div className="w-full max-w-[440px] relative">
-            <div className="absolute -top-10 -right-10 w-32 h-32 bg-[#00AEEF]/20 blur-[80px] rounded-full"></div>
-            
-            <form onSubmit={login} className="relative bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-[0_40px_100px_rgba(0,0,0,0.5)] p-12 flex flex-col">
-              
-              <div className="mb-10">
-                <h2 className="text-3xl font-black text-white uppercase italic tracking-tighter">Sign In</h2>
-                <div className="h-1 w-12 bg-[#00AEEF] mt-2"></div>
-              </div>
-
-              <div className="w-full space-y-5">
-                <div className="group">
-                    <label className="text-[10px] text-gray-500 uppercase tracking-[0.3em] ml-2 mb-2 block font-bold">Account Email</label>
-                    <input
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      type="email"
-                      placeholder="email@example.com"
-                      className="w-full p-5 rounded-2xl bg-white/5 border border-white/10 focus:border-[#00AEEF]/50 transition-all duration-500 outline-none text-white font-light tracking-wide"
-                    />
-                </div>
-
-                <div className="group">
-                    <label className="text-[10px] text-gray-500 uppercase tracking-[0.3em] ml-2 mb-2 block font-bold">Password</label>
-                    <input
-                      required
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      type="password"
-                      placeholder="••••••••"
-                      className="w-full p-5 rounded-2xl bg-white/5 border border-white/10 focus:border-[#00AEEF]/50 transition-all duration-500 outline-none text-white font-light tracking-wide"
-                    />
-                </div>
-              </div>
-
-              <div className="w-full flex justify-end mt-4 mb-8">
-                <Link to="/forget-password" name="forgot" className="text-gray-500 text-[10px] uppercase tracking-widest hover:text-[#00AEEF] transition-all">
-                  Recover Access?
-                </Link>
-              </div>
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full bg-white text-black font-black py-5 rounded-full hover:bg-[#00AEEF] hover:text-white active:scale-[0.95] transition-all duration-500 uppercase text-xs tracking-[0.2em] shadow-xl"
+        {/* Right — Frosted Glass Form Card */}
+        <div className="w-full max-w-[440px]">
+          <form
+            onSubmit={login}
+            className="bg-white/75 backdrop-blur-xl border border-white/60 rounded-[2.5rem] shadow-[0_20px_60px_rgba(244,63,94,0.15)] p-10 flex flex-col"
+          >
+            <div className="mb-8">
+              <p className="uppercase text-[10px] tracking-[0.4em] font-semibold text-rose-400 mb-2">Welcome back</p>
+              <h2
+                className="text-3xl font-black text-[#1A1A1A] italic tracking-tighter"
+                style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                {isLoading ? "Verifying..." : "Enter Experience"}
-              </button>
+                Sign In
+              </h2>
+              <div className="h-1 w-12 bg-rose-400 mt-2 rounded-full"></div>
+            </div>
 
-              <div className="w-full flex items-center gap-4 my-8">
-                <div className="h-[1px] bg-white/10 flex-1"></div>
-                <span className="text-gray-600 text-[10px] uppercase tracking-[0.4em]">OR</span>
-                <div className="h-[1px] bg-white/10 flex-1"></div>
+            <div className="w-full space-y-5">
+              <div>
+                <label className="text-[10px] text-gray-500 uppercase tracking-[0.3em] ml-1 mb-2 block font-semibold">
+                  Email Address
+                </label>
+                <input
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  placeholder="email@example.com"
+                  className="w-full p-4 rounded-2xl bg-white/80 border border-rose-100 focus:border-rose-400 focus:bg-white transition-all duration-300 outline-none text-[#1A1A1A] font-light tracking-wide text-sm"
+                />
               </div>
 
-              <button
-                onClick={() => GoogleLogin()}
-                type="button"
-                className="w-full flex items-center justify-center gap-4 bg-transparent border border-white/10 text-white py-4 rounded-full hover:bg-white/5 transition-all duration-500 font-bold uppercase text-[10px] tracking-[0.2em]"
-              >
-                <GrGoogle className="text-lg text-[#00AEEF]" />
-                Continue with Google
-              </button>
+              <div>
+                <label className="text-[10px] text-gray-500 uppercase tracking-[0.3em] ml-1 mb-2 block font-semibold">
+                  Password
+                </label>
+                <input
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  type="password"
+                  placeholder="••••••••"
+                  className="w-full p-4 rounded-2xl bg-white/80 border border-rose-100 focus:border-rose-400 focus:bg-white transition-all duration-300 outline-none text-[#1A1A1A] font-light tracking-wide text-sm"
+                />
+              </div>
+            </div>
 
-              <p className="text-gray-500 mt-10 text-center text-[10px] uppercase tracking-[0.2em]">
-                New here?{" "}
-                <Link to="/register" className="text-white font-black hover:text-[#00AEEF] underline underline-offset-4">
-                  Create Profile
-                </Link>
-              </p>
-            </form>
+            <div className="w-full flex justify-end mt-3 mb-6">
+              <Link
+                to="/forget-password"
+                className="text-gray-400 text-[10px] uppercase tracking-widest hover:text-rose-500 transition-all"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-[#1A1A1A] text-white font-bold py-4 rounded-full hover:bg-rose-500 active:scale-[0.97] transition-all duration-500 uppercase text-xs tracking-[0.2em] shadow-md"
+            >
+              {isLoading ? "Verifying..." : "Enter Experience"}
+            </button>
+
+            <div className="w-full flex items-center gap-4 my-6">
+              <div className="h-[1px] bg-rose-100 flex-1"></div>
+              <span className="text-gray-400 text-[10px] uppercase tracking-[0.4em]">OR</span>
+              <div className="h-[1px] bg-rose-100 flex-1"></div>
+            </div>
+
+            <button
+              onClick={() => GoogleLogin()}
+              type="button"
+              className="w-full flex items-center justify-center gap-3 bg-transparent border border-rose-200 text-[#1A1A1A] py-4 rounded-full hover:bg-rose-50 hover:border-rose-300 transition-all duration-300 font-semibold uppercase text-[10px] tracking-[0.2em]"
+            >
+              <GrGoogle className="text-rose-500" size={15} />
+              Continue with Google
+            </button>
+
+            <p className="text-gray-500 mt-8 text-center text-[10px] uppercase tracking-[0.2em]">
+              New here?{" "}
+              <Link to="/register" className="text-rose-500 font-black hover:text-rose-700 underline underline-offset-4">
+                Create Profile
+              </Link>
+            </p>
+          </form>
         </div>
       </div>
     </main>

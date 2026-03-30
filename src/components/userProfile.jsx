@@ -45,7 +45,7 @@ export default function UserData() {
 
     const handleDelivery = () => {
         if (user && user._id) {
-            // ඔබේ Route එකට අනුව මෙය වෙනස් කරගන්න (උදා: /track/:id)
+            // Change this according to your route (e.g., /track/:id)
             window.location.href = `/my-delivery/${user._id}`;
         } else {
             window.location.href = "/my-delivery";

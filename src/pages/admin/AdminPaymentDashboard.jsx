@@ -11,7 +11,7 @@ export default function AdminPaymentDashboard() {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedReceipt, setSelectedReceipt] = useState(null); // Modal එක සඳහා
+    const [selectedReceipt, setSelectedReceipt] = useState(null); // For modal
 
     useEffect(() => {
         fetchAllPayments();
@@ -44,7 +44,7 @@ export default function AdminPaymentDashboard() {
 
             if (response.data.success) {
                 toast.success(`Payment marked as ${newStatus}`);
-                fetchAllPayments(); // ලැයිස්තුව Refresh කිරීම
+                fetchAllPayments(); // Refresh list
             }
         } catch (error) {
             toast.error("Update failed");

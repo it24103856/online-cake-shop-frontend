@@ -26,12 +26,12 @@ export default function CakeDetailPage() {
                 setCake(response.data.data);
                 setActiveImg(response.data.data.Image?.[0] || "");
             } else {
-                toast.error("මෙම නිර්මාණය සොයාගත නොහැක.");
+                toast.error("This design could not be found.");
                 navigate("/shop");
             }
         } catch (error) {
             console.error(error);
-            toast.error("විස්තර ලබා ගැනීමට අපහසු වුණා.");
+            toast.error("Failed to load details.");
             navigate("/shop");
         } finally {
             setLoading(false);
@@ -49,10 +49,10 @@ export default function CakeDetailPage() {
                 cart.push({ ...cake, quantity });
             }
             localStorage.setItem("cart", JSON.stringify(cart));
-            toast.success(`${cake.name} කූඩයට එකතු කළා!`);
+            toast.success(`${cake.name} added to cart!`);
             navigate("/order");
         } catch (error) {
-            toast.error("යම් දෝෂයක් සිදු වුණා.");
+            toast.error("Something went wrong.");
         } finally {
             setAddingToCart(false);
         }

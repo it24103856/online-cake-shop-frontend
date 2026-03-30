@@ -43,12 +43,12 @@ export default function AdminCakeAddPage() {
         try {
             const imageUrl = await uploadFile(imageFile);
             
-            // Backend Schema එකට ගැලපෙන පරිදි දත්ත සකස් කිරීම
+            // Prepare data to match backend schema
             const payload = {
                 ...formData,
                 price: parseFloat(formData.price),
                 quantity: parseInt(formData.quantity),
-                Image: [imageUrl], // Schema එකේ තියෙන්නේ Array එකක් නිසා
+                Image: [imageUrl], // Schema expects an array
             };
 
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/cakes`, payload, {

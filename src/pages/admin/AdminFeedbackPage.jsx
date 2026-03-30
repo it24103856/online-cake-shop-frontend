@@ -12,7 +12,7 @@ export default function AdminFeedback() {
 
     const loadData = async () => {
         try {
-            // Backend Controller එකට අනුව API calls
+            // API calls according to backend controller
             const [fbRes, statsRes] = await Promise.all([
                 axios.get(`${import.meta.env.VITE_BACKEND_URL}/feedback/get-all`),
                 axios.get(`${import.meta.env.VITE_BACKEND_URL}/feedback/stats`, {
@@ -20,9 +20,9 @@ export default function AdminFeedback() {
                 })
             ]);
 
-            // Controller එකෙන් feedbacks එවන්නේ { feedbacks: [], totalPages: x } ලෙසයි
+            // Controller returns feedbacks as { feedbacks: [], totalPages: x }
             setFeedbacks(fbRes.data.feedbacks || []);
-            // Controller එකෙන් stats එවන්නේ { success: true, stats: { overall: {}, ... } } ලෙසයි
+            // Controller returns stats as { success: true, stats: { overall: {}, ... } }
             setStats(statsRes.data.stats);
         } catch (err) {
             console.error("Error loading feedback:", err);

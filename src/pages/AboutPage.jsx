@@ -5,7 +5,7 @@ import Footer from '../components/Footer';
 
 export default function About() {
   return (
-    <main className="w-full min-h-screen bg-[#FDFDFD] ">
+    <main className="w-full min-h-screen bg-[#FDF8F0]">
 
       {/* 1. Hero Section with Luxury Cake Background */}
       <section className="relative h-[65vh] flex items-center justify-center bg-fixed bg-center bg-cover"

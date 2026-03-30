@@ -30,7 +30,7 @@ export default function DriverDashboard() {
             // 1. Upload to Supabase
             const imageUrl = await uploadFile(file);
 
-            // 2. Update Backend - පින්තූරය පමණක් යවයි (Status එක Delivered කරන්නේ නැත)
+            // 2. Update backend - send image only (do not mark status as Delivered)
             await axios.put(`${import.meta.env.VITE_BACKEND_URL}/deliveries/driver-update/${taskId}`, {
                 imageUrl: imageUrl 
             }, { 
