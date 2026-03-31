@@ -27,12 +27,12 @@ export default function CakeDetailPage() {
                 setActiveImg(response.data.data.Image?.[0] || "");
             } else {
                 toast.error("This design could not be found.");
-                navigate("/shop");
+                navigate("/cakes");
             }
         } catch (error) {
             console.error(error);
             toast.error("Failed to load details.");
-            navigate("/shop");
+            navigate("/cakes");
         } finally {
             setLoading(false);
         }
@@ -75,7 +75,7 @@ export default function CakeDetailPage() {
             <div className="max-w-7xl mx-auto px-6 py-12">
                 
                 {/* Breadcrumb & Navigation */}
-                <Link to="/shop" className="group inline-flex items-center gap-2 text-neutral-400 hover:text-rose-500 transition-colors mb-12 uppercase text-xs font-bold tracking-widest">
+                <Link to="/cakes" className="group inline-flex items-center gap-2 text-neutral-400 hover:text-rose-500 transition-colors mb-12 uppercase text-xs font-bold tracking-widest">
                     <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to Collection
                 </Link>
 

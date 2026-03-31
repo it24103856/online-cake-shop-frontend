@@ -31,7 +31,7 @@ export default function PaymentPage() {
                     </div>
                     <h2 className="text-2xl font-bold mb-2">No Active Order</h2>
                     <p className="text-neutral-500 mb-8">We couldn't find any order details. Please try again.</p>
-                    <button onClick={() => navigate("/shop")} className="w-full py-4 bg-black text-white rounded-2xl font-bold hover:bg-rose-500 transition-all">
+                    <button onClick={() => navigate("/cakes")} className="w-full py-4 bg-black text-white rounded-2xl font-bold hover:bg-rose-500 transition-all">
                         Return to Shop
                     </button>
                 </div>

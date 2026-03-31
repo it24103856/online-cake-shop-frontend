@@ -24,7 +24,7 @@ export default function OrderPage() {
         const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
         if (savedCart.length === 0) {
             toast.error("Your cart is empty.");
-            navigate("/shop");
+            navigate("/cakes");
         }
         setCart(savedCart);
         fetchAllProducts();
@@ -62,7 +62,7 @@ export default function OrderPage() {
         const updatedCart = cart.filter(item => item._id !== id);
         setCart(updatedCart);
         localStorage.setItem("cart", JSON.stringify(updatedCart));
-        if (updatedCart.length === 0) navigate("/shop");
+        if (updatedCart.length === 0) navigate("/cakes");
     };
 
     const addToCartFromSearch = (item) => {

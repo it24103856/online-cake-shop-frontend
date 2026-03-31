@@ -61,7 +61,7 @@ export default function MyOrdersPage() {
                         <h2 className="text-2xl font-bold text-neutral-800 mb-2">No orders yet</h2>
                         <p className="text-neutral-500 mb-8">It looks like you haven't ordered any treats lately.</p>
                         <button 
-                            onClick={() => window.location.href = '/shop'}
+                            onClick={() => window.location.href = '/cakes'}
                             className="px-8 py-4 bg-black text-white rounded-2xl font-bold uppercase tracking-widest hover:bg-rose-500 transition-all"
                         >
                             Start Shopping
