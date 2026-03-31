@@ -11,12 +11,16 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleRedirect = (role) => {
-    const userRole = role.toLowerCase();
-    if (userRole === "admin") navigate("/admin");
-    else if (userRole === "driver") navigate("/driver/dashboard");
-    else navigate("/");
-  };
+const handleRedirect = (role) => {
+ 
+  if (role === "admin") {
+    navigate("/admin");
+  } else if (role === "Driver") {
+    navigate("/driver");
+  } else {
+    navigate("/"); 
+  }
+};
 
   const GoogleLogin = useGoogleLogin({
     flow: "implicit",

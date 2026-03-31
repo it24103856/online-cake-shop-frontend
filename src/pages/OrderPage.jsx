@@ -94,6 +94,14 @@ export default function OrderPage() {
     // --- Main change is here ---
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Phone number validation: Only digits and exactly 10 digits
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(formData.phone)) {
+            toast.error("Please enter a valid 10-digit phone number.");
+            return;
+        }
+
         setIsSubmitting(true);
 
         const orderData = {
@@ -170,7 +178,17 @@ export default function OrderPage() {
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="relative">
                                     <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300" size={18} />
-                                    <input type="tel" name="phone" placeholder="Phone Number" required className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all" onChange={handleInputChange} />
+                                    <input 
+                                        type="tel" 
+                                        name="phone" 
+                                        placeholder="Phone Number (10 digits)" 
+                                        required 
+                                        pattern="[0-9]{10}"
+                                        maxLength="10"
+                                        title="Please enter exactly 10 digits"
+                                        className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all" 
+                                        onChange={handleInputChange} 
+                                    />
                                 </div>
                                 <div className="relative">
                                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300" size={18} />

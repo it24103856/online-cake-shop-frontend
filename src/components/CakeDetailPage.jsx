@@ -131,7 +131,7 @@ export default function CakeDetailPage() {
                         <div className="grid grid-cols-3 gap-6 py-8 border-y border-neutral-100">
                             <div>
                                 <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest mb-1">Price</p>
-                                <p className="text-4xl font-black text-neutral-900">${cake.price}</p>
+                                <p className="text-4xl font-black text-neutral-900">LKR.{cake.price}</p>
                             </div>
                             <div>
                                 <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest mb-1">Weight</p>

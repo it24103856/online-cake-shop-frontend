@@ -120,7 +120,7 @@ export default function AccessoriesPage() {
                                                 </p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-2xl font-black text-neutral-900">${item.price}</p>
+                                                <p className="text-2xl font-black text-neutral-900">LKR.{item.price}</p>
                                             </div>
                                         </div>
                                         

@@ -86,7 +86,7 @@ export default function MyOrdersPage() {
                                         </div>
                                         <div>
                                             <p className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-1">Total Amount</p>
-                                            <p className="text-sm font-bold text-rose-500">${order.totalPrice.toFixed(2)}</p>
+                                            <p className="text-sm font-bold text-rose-500">LKR.{order.totalPrice.toFixed(2)}</p>
                                         </div>
                                     </div>
 
@@ -112,7 +112,7 @@ export default function MyOrdersPage() {
                                                     <p className="text-xs text-neutral-400">Quantity: {item.quantity} | {item.weight || '1kg'}</p>
                                                 </div>
                                                 <div className="hidden md:block text-right">
-                                                    <p className="text-sm font-bold text-neutral-800">${(item.price * item.quantity).toFixed(2)}</p>
+                                                    <p className="text-sm font-bold text-neutral-800">LKR.{(item.price * item.quantity).toFixed(2)}</p>
                                                 </div>
                                             </div>
                                         ))}

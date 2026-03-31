@@ -94,9 +94,9 @@ export default function AdminUserPage() {
                           className={`px-3 py-1 rounded-full text-[11px] font-black uppercase border-none outline-none cursor-pointer transition-all duration-500 ${
                             item.role === "admin" ? "bg-purple-100 text-purple-700" : "bg-[#00AEEF]/10 text-[#00AEEF]"
                           }`}>
-                          <option value="customer">Customer</option>
+                          <option value="user">user</option>
                           <option value="admin">Admin</option>
-                          <option value="agent">Driver</option>
+                          <option value="Driver">Driver</option>
                         </select>
                       </td>
                       <td className="px-6 py-4 text-center">

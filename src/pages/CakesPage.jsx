@@ -116,7 +116,7 @@ export default function ShopPage() {
                                                 <p className="text-neutral-400 text-sm italic mt-0.5">{cake.flavor} • {cake.weight}</p>
                                             </div>
                                             <div className="text-right">
-                                                <p className="text-2xl font-black text-neutral-900">${cake.price}</p>
+                                                <p className="text-2xl font-black text-neutral-900">LKR.{cake.price}</p>
                                             </div>
                                         </div>
                                         

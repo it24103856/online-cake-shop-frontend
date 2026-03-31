@@ -115,7 +115,7 @@ export default function AccessoryDetailPage() {
                         <div className="grid grid-cols-2 gap-6 py-8 border-y border-neutral-100">
                             <div>
                                 <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest mb-1">Price per unit</p>
-                                <p className="text-4xl font-black text-neutral-900">${accessory.price}</p>
+                                <p className="text-4xl font-black text-neutral-900">LKR.{accessory.price}</p>
                             </div>
                             <div>
                                 <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest mb-1">Availability</p>

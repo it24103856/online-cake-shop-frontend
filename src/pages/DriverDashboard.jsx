@@ -1,12 +1,39 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Camera, MapPin, Loader2, CheckCircle } from "lucide-react";
+import { Camera, MapPin, Loader2, CheckCircle, LogOut } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { uploadFile } from "../utils/meadiaUpload";
 
 export default function DriverDashboard() {
     const [tasks, setTasks] = useState([]);
     const [isUpdating, setIsUpdating] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const navigate = useNavigate();
+
+    // 1. Auth & Role Validation Logic
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
+        axios.get(`${import.meta.env.VITE_BACKEND_URL}/users/`, {
+            headers: { Authorization: `Bearer ${token}` }
+        }).then((res) => {
+            if (res.data && res.data.role === "Driver") {
+                setIsLoading(false);
+                fetchTasks(); 
+            } else {
+                toast.error("Access Denied: Drivers only");
+                navigate("/");
+            }
+        }).catch(() => {
+            localStorage.clear();
+            navigate("/login");
+        });
+    }, [navigate]);
 
     const fetchTasks = async () => {
         try {
@@ -14,10 +41,15 @@ export default function DriverDashboard() {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
             setTasks(res.data.data);
-        } catch (error) { toast.error("Failed to load tasks"); }
+        } catch (error) { 
+            toast.error("Failed to load tasks"); 
+        }
     };
 
-    useEffect(() => { fetchTasks(); }, []);
+    const handleLogout = () => {
+        localStorage.clear();
+        navigate("/login");
+    };
 
     const handleUploadProof = async (e, taskId) => {
         const file = e.target.files[0];
@@ -30,7 +62,7 @@ export default function DriverDashboard() {
             // 1. Upload to Supabase
             const imageUrl = await uploadFile(file);
 
-            // 2. Update backend - send image only (do not mark status as Delivered)
+            // 2. Update backend
             await axios.put(`${import.meta.env.VITE_BACKEND_URL}/deliveries/driver-update/${taskId}`, {
                 imageUrl: imageUrl 
             }, { 
@@ -39,15 +71,34 @@ export default function DriverDashboard() {
 
             toast.success("Proof uploaded successfully!", { id: "delivery" });
             fetchTasks(); 
-        } catch (error) { toast.error("Upload failed", { id: "delivery" }); }
-        finally { setIsUpdating(null); }
+        } catch (error) { 
+            toast.error("Upload failed", { id: "delivery" }); 
+        } finally { 
+            setIsUpdating(null); 
+        }
     };
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-slate-50">
+                <Loader2 className="animate-spin text-rose-500" size={40} />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-slate-50 p-4 py-10">
             <header className="mb-6 flex items-center justify-between rounded-2xl bg-black p-5 text-white">
-                <h1 className="text-xl font-bold italic">Driver Portal</h1>
-                <span className="bg-rose-500 px-3 py-1 text-[10px] font-black rounded-full">{tasks.length} Active</span>
+                <div className="flex flex-col">
+                    <h1 className="text-xl font-bold italic">Driver Portal</h1>
+                    <span className="text-[10px] text-gray-400">Authenticated Access Only</span>
+                </div>
+                <div className="flex items-center gap-3">
+                    <span className="bg-rose-500 px-3 py-1 text-[10px] font-black rounded-full">{tasks.length} Active</span>
+                    <button onClick={handleLogout} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <LogOut size={18} className="text-white" />
+                    </button>
+                </div>
             </header>
 
             <div className="space-y-4">
@@ -84,6 +135,12 @@ export default function DriverDashboard() {
                         )}
                     </div>
                 ))}
+
+                {tasks.length === 0 && (
+                    <div className="text-center py-20 text-gray-400 font-medium">
+                        No delivery tasks assigned yet.
+                    </div>
+                )}
             </div>
         </div>
     );

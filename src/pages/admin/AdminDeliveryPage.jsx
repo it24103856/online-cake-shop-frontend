@@ -6,6 +6,7 @@ import { Truck, Loader2, Plus, Eye, X } from "lucide-react";
 export default function AdminDeliveryPage() {
     const [deliveries, setDeliveries] = useState([]);
     const [orders, setOrders] = useState([]);
+    const [drivers, setDrivers] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [selectedDelivery, setSelectedDelivery] = useState(null);
@@ -13,8 +14,8 @@ export default function AdminDeliveryPage() {
 
     const [formData, setFormData] = useState({
         orderID: "",
-        driverName: "",
-        driverPhone: "",
+        driverID: "", 
+        driverPhone: "", // අලුතින් එක් කළා
         vehicleNumber: "",
         estimatedTime: ""
     });
@@ -24,11 +25,14 @@ export default function AdminDeliveryPage() {
 
     const loadData = async () => {
         try {
-            const [delRes, orderRes] = await Promise.all([
+            const [delRes, orderRes, driverRes] = await Promise.all([
                 axios.get(`${BASE_URL}/deliveries`, { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get(`${BASE_URL}/orders`, { headers: { Authorization: `Bearer ${token}` } })
+                axios.get(`${BASE_URL}/orders`, { headers: { Authorization: `Bearer ${token}` } }),
+                axios.get(`${BASE_URL}/users/drivers`, { headers: { Authorization: `Bearer ${token}` } }) 
             ]);
+
             setDeliveries(delRes.data?.data || []);
+            setDrivers(driverRes.data || []); 
             
             const alreadyAssignedIds = (delRes.data?.data || []).map(d => (d.orderID?._id || d.orderID || "").toString());
             const validOrders = (orderRes.data?.data || []).filter(o => !alreadyAssignedIds.includes(o._id.toString()));
@@ -40,7 +44,6 @@ export default function AdminDeliveryPage() {
 
     useEffect(() => { loadData(); }, []);
 
-    // --- Function to manually update status by admin ---
     const handleStatusUpdate = async (deliveryId, newStatus) => {
         try {
             await axios.put(`${BASE_URL}/deliveries/update/${deliveryId}`, 
@@ -48,7 +51,7 @@ export default function AdminDeliveryPage() {
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             toast.success(`Status updated to ${newStatus}`);
-            loadData(); // Refresh table
+            loadData(); 
         } catch (error) {
             toast.error("Status update failed");
         }
@@ -56,21 +59,33 @@ export default function AdminDeliveryPage() {
 
     const handleAssign = async (e) => {
         e.preventDefault();
-        if (!formData.driverPhone) return toast.error("Please enter phone number");
+        
+        const selectedDriver = drivers.find(d => d._id === formData.driverID);
+        if (!selectedDriver) return toast.error("Please select a driver from the list");
+
+        // Phone number එක තිබේදැයි check කිරීම
+        if (!formData.driverPhone || formData.driverPhone.trim() === "") {
+            return toast.error("Driver phone number is required!");
+        }
 
         setSubmitting(true);
         try {
             const payload = {
                 orderID: formData.orderID,
-                deliveryPerson: { name: formData.driverName, phone: formData.driverPhone },
+                deliveryPerson: { 
+                    name: `${selectedDriver.firstName} ${selectedDriver.lastName}`, 
+                    phone: formData.driverPhone // Form එකේ ඇති phone එක යවයි
+                },
                 vehicleNumber: formData.vehicleNumber,
                 estimatedDeliveryTime: formData.estimatedTime
             };
             await axios.post(`${BASE_URL}/deliveries/assign`, payload, { headers: { Authorization: `Bearer ${token}` } });
             toast.success("Delivery assigned successfully!");
-            setFormData({ orderID: "", driverName: "", driverPhone: "", vehicleNumber: "", estimatedTime: "" });
+            setFormData({ orderID: "", driverID: "", driverPhone: "", vehicleNumber: "", estimatedTime: "" });
             loadData(); 
-        } catch (error) { toast.error("Assignment failed"); }
+        } catch (error) { 
+            toast.error(error.response?.data?.message || "Assignment failed"); 
+        }
         finally { setSubmitting(false); }
     };
 
@@ -93,7 +108,6 @@ export default function AdminDeliveryPage() {
             </header>
 
             <div className="grid grid-cols-1 gap-8 xl:grid-cols-3">
-                {/* Dispatch Form */}
                 <section className="bg-white p-6 rounded-3xl border border-neutral-100 shadow-sm h-fit">
                     <h2 className="text-xl font-black mb-6 flex items-center gap-2 italic uppercase"><Plus size={20} className="text-rose-500"/> Dispatch Task</h2>
                     <form onSubmit={handleAssign} className="space-y-4">
@@ -102,21 +116,37 @@ export default function AdminDeliveryPage() {
                             <option value="">Select Order</option>
                             {orders.map(o => <option key={o._id} value={o._id}>#{o._id.slice(-6).toUpperCase()}</option>)}
                         </select>
-                        <input required placeholder="Driver Name" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
-                            value={formData.driverName} onChange={(e) => setFormData({ ...formData, driverName: e.target.value })} />
-                        <input required type="tel" placeholder="Driver Phone" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
+
+                        <select required className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
+                            value={formData.driverID} 
+                            onChange={(e) => {
+                                const selected = drivers.find(d => d._id === e.target.value);
+                                setFormData({ ...formData, driverID: e.target.value, driverPhone: selected?.phone || "" });
+                            }}>
+                            <option value="">Select Available Driver</option>
+                            {drivers.map(d => (
+                                <option key={d._id} value={d._id}>
+                                    {d.firstName} {d.lastName} {d.phone ? `(${d.phone})` : "(No Phone)"}
+                                </option>
+                            ))}
+                        </select>
+
+                        {/* Phone number input එකක් එක් කළා - පෙනුම වෙනස් නොවේ */}
+                        <input required placeholder="Driver Phone Number" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
                             value={formData.driverPhone} onChange={(e) => setFormData({ ...formData, driverPhone: e.target.value })} />
+
                         <input required placeholder="Vehicle Plate No" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
                             value={formData.vehicleNumber} onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value })} />
+                        
                         <input required type="text" placeholder="Est. Time" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
                             value={formData.estimatedTime} onChange={(e) => setFormData({ ...formData, estimatedTime: e.target.value })} />
+                        
                         <button type="submit" disabled={submitting} className="w-full h-14 bg-black text-white rounded-2xl font-black uppercase tracking-widest hover:bg-rose-600 transition-colors">
                             {submitting ? "Processing..." : "Assign & Dispatch"}
                         </button>
                     </form>
                 </section>
 
-                {/* Delivery Table */}
                 <section className="xl:col-span-2 bg-white rounded-3xl border border-neutral-100 shadow-sm overflow-hidden">
                     <table className="w-full text-left">
                         <thead className="bg-neutral-50 text-[10px] uppercase font-black text-neutral-400">
@@ -137,7 +167,6 @@ export default function AdminDeliveryPage() {
                                     </td>
                                     <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            {/* Proof animation - show only when an image exists */}
                                             {item.image && (
                                                 <span className="relative flex h-3 w-3">
                                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -145,7 +174,6 @@ export default function AdminDeliveryPage() {
                                                 </span>
                                             )}
                                             
-                                            {/* Status Selector Dropdown */}
                                             <select 
                                                 value={item.deliveryStatus} 
                                                 onChange={(e) => handleStatusUpdate(item._id, e.target.value)}
@@ -174,7 +202,6 @@ export default function AdminDeliveryPage() {
                 </section>
             </div>
 
-            {/* Modal for Details & Proof Image */}
             {isModalOpen && selectedDelivery && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
                     <div className="bg-white w-full max-w-2xl rounded-[2.5rem] overflow-hidden shadow-2xl animate-in zoom-in duration-200">
