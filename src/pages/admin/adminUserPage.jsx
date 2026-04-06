@@ -111,10 +111,7 @@ export default function AdminUserPage() {
                             title={item.isblocked ? "Unblock User" : "Block User"}>
                             {item.isblocked ? <ShieldCheck size={18} /> : <ShieldBan size={18} />}
                           </button>
-                          <button onClick={() => navigate(`/admin/update-user/${item.email}`, { state: item })}
-                            className="bg-[#00AEEF]/10 hover:bg-[#00AEEF] text-[#00AEEF] hover:text-white p-2 rounded-xl transition-all duration-500" title="Edit User">
-                            <Pencil size={18} />
-                          </button>
+                          
                           <button onClick={() => openDeleteConfirm(item)} className="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white p-2 rounded-xl transition-all duration-500" title="Delete User">
                             <Trash2 size={18} />
                           </button>

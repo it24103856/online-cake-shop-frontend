@@ -3,7 +3,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { 
     Package, Truck, Clock, 
-    Loader2, ChevronLeft, Mail, Star, MapPin
+    Loader2, ChevronLeft, Mail, Star, MapPin, CheckCircle, MessageSquare
 } from "lucide-react";
 import { toast } from "react-hot-toast";
 
@@ -157,6 +157,28 @@ export default function CustomerTrackByEmail() {
                                                 <p className="font-bold text-[10px] uppercase truncate italic">{item.orderID?.customer?.address || "Delivery Address"}</p>
                                             </div>
                                         </div>
+
+                                        {/* Action Buttons */}
+                                        {(item.deliveryStatus === 'Delivered' || item.deliveryStatus === 'DELIVERED' || item.deliveryStatus === 'delivered') && (
+                                            <div className="flex gap-3 mt-6 pt-6 border-t border-dashed border-white/10">
+                                                <button
+                                                    onClick={() => {
+                                                        toast.success("Order marked as received!");
+                                                    }}
+                                                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl uppercase text-[10px] tracking-widest"
+                                                >
+                                                    <CheckCircle size={16} />
+                                                    Complete
+                                                </button>
+                                                <Link
+                                                    to="/reviews"
+                                                    className="flex-1 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl uppercase text-[10px] tracking-widest"
+                                                >
+                                                    <MessageSquare size={16} />
+                                                    Review
+                                                </Link>
+                                            </div>
+                                        )}
                                     </div>
                                     
                                     {/* Ghost Icon Effect */}

@@ -17,6 +17,7 @@ import MyPayments from "./MyPayments";
 import FeedbackForm from "./Feedback";
 import DriverDashboard from "./DriverDashboard"
 import CustomerTrack from "../components/CustomerTrack";
+import ReviewPage from "./ReviewPage";
 
 
 export default function LinkPage() {
@@ -41,6 +42,7 @@ export default function LinkPage() {
                     <Route path="/feedback" element={<FeedbackForm />} />
                     <Route path="/driver" element={<DriverDashboard/>}/>
                     <Route path="/my-delivery/:userId" element={<CustomerTrack />} />
+                    <Route path="/reviews" element={<ReviewPage />} />
 
                 </Routes>
             </main>
