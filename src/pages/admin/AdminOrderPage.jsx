@@ -111,7 +111,7 @@ export default function AdminOrderPage() {
                                         <p className="font-medium text-sm text-neutral-800">{order.customer.name}</p>
                                         <p className="text-xs text-neutral-400">{order.customer.phone}</p>
                                     </td>
-                                    <td className="p-5 font-bold text-neutral-900">${order.totalPrice.toFixed(2)}</td>
+                                    <td className="p-5 font-bold text-neutral-900">LKR.{order.totalPrice.toFixed(2)}</td>
                                     <td className="p-5">
                                         <select 
                                             value={order.status}

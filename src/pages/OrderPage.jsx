@@ -113,7 +113,7 @@ export default function OrderPage() {
             },
             items: cart.map(item => ({
                 productID: item._id,
-                itemType: item.type === 'Accessory' || item.type === 'Accessories' ? 'Accessories' : 'Cake', 
+                itemType: (item.type && item.type.toLowerCase().includes('accessor')) ? 'Accessories' : 'Cake', 
                 name: item.name,
                 price: Number(item.price),
                 quantity: Number(item.quantity),
@@ -200,7 +200,7 @@ export default function OrderPage() {
 
                             <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase tracking-widest hover:bg-rose-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-neutral-200 disabled:bg-neutral-400">
                                 {isSubmitting ? <Loader2 className="animate-spin" /> : <CreditCard size={20} />}
-                                Confirm & Pay ${total.toFixed(2)}
+                                Confirm & Pay LKR.{total.toFixed(2)}
                             </button>
                         </form>
                     </div>
@@ -234,17 +234,17 @@ export default function OrderPage() {
                                             <button onClick={() => removeItem(item._id)} className="text-neutral-300 hover:text-rose-500 transition-colors p-1"><Trash2 size={16} /></button>
                                         </div>
                                     </div>
-                                    <p className="font-black text-neutral-900">${(item.price * item.quantity).toFixed(2)}</p>
+                                    <p className="font-black text-neutral-900">LKR.{(item.price * item.quantity).toFixed(2)}</p>
                                 </div>
                             ))}
                         </div>
 
                         <div className="border-t border-dashed pt-6 space-y-3">
-                            <div className="flex justify-between text-neutral-500 text-sm"><span>Subtotal</span><span className="font-bold">${subtotal.toFixed(2)}</span></div>
-                            <div className="flex justify-between text-neutral-500 text-sm font-medium italic"><span>Delivery Fee</span><span>${deliveryFee.toFixed(2)}</span></div>
-                            <div className="flex justify-between text-2xl font-black pt-4 text-rose-500 border-t border-neutral-50">
-                                <span className="uppercase text-xs tracking-[0.2em] self-center text-neutral-400">Total</span>
-                                <span>${total.toFixed(2)}</span>
+                              <div className="flex justify-between text-neutral-500 text-sm"><span>Subtotal</span><span className="font-bold">LKR.{subtotal.toFixed(2)}</span></div>
+                              <div className="flex justify-between text-neutral-500 text-sm font-medium italic"><span>Delivery Fee</span><span>LKR.{deliveryFee.toFixed(2)}</span></div>
+                              <div className="flex justify-between text-2xl font-black pt-4 text-rose-500 border-t border-neutral-50">
+                                  <span className="uppercase text-xs tracking-[0.2em] self-center text-neutral-400">Total</span>
+                                  <span>LKR.{total.toFixed(2)}</span>
                             </div>
                         </div>
                     </div>
@@ -271,7 +271,7 @@ export default function OrderPage() {
                                             <img src={item.Image?.[0] || item.image?.[0]} className="w-12 h-12 rounded-xl object-cover" alt="" />
                                             <div>
                                                 <p className="font-bold text-sm text-neutral-800">{item.name}</p>
-                                                <p className="text-[10px] text-neutral-400 font-bold">${item.price}</p>
+                                                <p className="text-[10px] text-neutral-400 font-bold">LKR.{item.price}</p>
                                             </div>
                                         </div>
                                         <button onClick={() => addToCartFromSearch(item)} className="p-2 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all"><Plus size={18} /></button>

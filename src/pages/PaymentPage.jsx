@@ -111,7 +111,7 @@ export default function PaymentPage() {
                         <div className="w-14 h-14 bg-rose-500 rounded-3xl flex items-center justify-center text-white shadow-lg"><Banknote size={28} /></div>
                         <div>
                             <p className="text-xs font-black text-neutral-400 uppercase tracking-widest">Payable Amount</p>
-                            <h2 className="text-3xl font-black text-neutral-900">${totalAmount.toFixed(2)}</h2>
+                            <h2 className="text-3xl font-black text-neutral-900">LKR.{totalAmount.toFixed(2)}</h2>
                         </div>
                     </div>
                 </div>

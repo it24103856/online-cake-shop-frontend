@@ -11,21 +11,21 @@ export default function HomePage() {
       name: "Wedding Cakes",
       count: "12 designs",
       img: "/wedding.jpg",
-      price: "from $180",
+      price: "from LKR.180",
     },
     {
       id: "artisan",
       name: "Artisan Cakes",
       count: "24 designs",
       img: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?q=80&w=1000&auto=format&fit=crop",
-      price: "from $65",
+      price: "from LKR.65",
     },
     {
       id: "luxury",
       name: "Luxury Range",
       count: "08 designs",
       img: "/cupcake.jpg",
-      price: "from $250",
+      price: "from LKR.250",
     },
   ];
 
@@ -34,25 +34,25 @@ export default function HomePage() {
     {
       id: "topper-1",
       name: "Gold Leaf Topper",
-      price: "$24",
+      price: "LKR.24",
       img: "/gold.jpg",
     },
     {
       id: "stand-1",
       name: "Marble Cake Stand",
-      price: "$48",
+      price: "LKR.48",
       img: "/stand.jpg",
     },
     {
       id: "box-1",
       name: "Luxury Gift Box",
-      price: "$32",
+      price: "LKR.32",
       img: "/box.jpg",
     },
     {
       id: "cutter-1",
       name: "Custom Cake Cutter",
-      price: "$19",
+      price: "LKR.19",
       img: "/cutter.jpg",
     },
   ];

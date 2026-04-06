@@ -261,7 +261,7 @@ export default function ReviewPage() {
                                                                             Weight: {item.weight}
                                                                         </p>
                                                                     )}
-                                                                    <p className="text-xs font-bold mt-2">Rs. {item.price}</p>
+                                                                    <p className="text-xs font-bold mt-2">LKR. {item.price}</p>
                                                                 </div>
                                                             </div>
 

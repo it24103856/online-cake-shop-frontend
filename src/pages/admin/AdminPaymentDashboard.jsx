@@ -110,7 +110,7 @@ export default function AdminPaymentDashboard() {
                                         <div className="text-xs font-bold text-neutral-600">{payment.paymentMethod}</div>
                                         <div className="text-[10px] text-neutral-400 uppercase tracking-tighter">{payment.referenceNumber || "No Ref"}</div>
                                     </td>
-                                    <td className="px-8 py-6 font-black text-neutral-900">${payment.amount?.toFixed(2)}</td>
+                                    <td className="px-8 py-6 font-black text-neutral-900">LKR.{payment.amount?.toFixed(2)}</td>
                                     <td className="px-8 py-6">
                                         {payment.receiptImage ? (
                                             <button 

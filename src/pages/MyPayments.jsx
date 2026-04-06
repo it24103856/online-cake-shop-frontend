@@ -159,7 +159,7 @@ export default function MyPayments() {
                                                 </div>
                                             </td>
                                             <td className="px-10 py-8">
-                                                <span className="font-black text-neutral-900 text-lg italic">${payment.amount?.toFixed(2)}</span>
+                                                <span className="font-black text-neutral-900 text-lg italic">LKR.{payment.amount?.toFixed(2)}</span>
                                             </td>
                                             <td className="px-10 py-8">
                                                 {getStatusBadge(payment.status)}

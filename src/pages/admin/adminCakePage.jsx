@@ -119,7 +119,7 @@ export default function AdminCakePage() {
                                     </td>
                                     <td className="px-8 py-5">
                                         <div className="flex flex-col">
-                                            <span className="text-xl font-black text-gray-900">${cake.price}</span>
+                                            <span className="text-xl font-black text-gray-900">LKR.{cake.price}</span>
                                             <span className={`text-[10px] font-bold uppercase ${cake.quantity < 10 ? 'text-red-500' : 'text-green-600'}`}>
                                                 {cake.quantity} in stock • {cake.weight}
                                             </span>

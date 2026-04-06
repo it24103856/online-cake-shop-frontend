@@ -111,7 +111,7 @@ export default function AdminAccessoriesPage() {
                                     </td>
                                     <td className="px-8 py-6">
                                         <div className="flex flex-col">
-                                            <span className="text-lg font-serif font-bold text-gray-900">${accessory.price}</span>
+                                            <span className="text-lg font-serif font-bold text-gray-900">LKR.{accessory.price}</span>
                                             <span className={`text-[10px] font-bold uppercase tracking-widest ${accessory.quantity < 10 ? 'text-red-500' : 'text-gray-400'}`}>
                                                 {accessory.quantity} Units in Stock
                                             </span>
