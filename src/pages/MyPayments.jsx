@@ -25,7 +25,7 @@ export default function MyPayments() {
             const token = localStorage.getItem("token");
             
             // Use the correct backend URL
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/payments`, {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/payments/my-payments`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

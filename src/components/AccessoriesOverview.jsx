@@ -4,6 +4,7 @@ import axios from "axios";
 import { Loader2, ArrowLeft, ShoppingCart, Star, ShieldCheck, Truck, Clock, PackageCheck } from "lucide-react";
 import { toast } from "react-hot-toast";
 import Footer from "../components/Footer";
+import ReviewsList from "../components/ReviewsList";
 
 export default function AccessoryDetailPage() {
     const { id } = useParams();
@@ -102,9 +103,9 @@ export default function AccessoryDetailPage() {
                             </h1>
                             <div className="flex items-center gap-4">
                                 <div className="flex gap-0.5">
-                                    {[...Array(5)].map((_, i) => <Star key={i} size={14} className="fill-rose-400 text-rose-400" />)}
+                                    {[...Array(5)].map((_, i) => <Star key={i} size={14} className={i < Math.round(accessory.rating) ? "fill-rose-400 text-rose-400" : "text-neutral-300"} />)}
                                 </div>
-                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">Premium Quality</span>
+                                <span className="text-xs font-bold text-neutral-400 uppercase tracking-widest">{accessory.rating || 0} Rating</span>
                             </div>
                         </div>
 
@@ -165,6 +166,9 @@ export default function AccessoryDetailPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Reviews Section */}
+                <ReviewsList productId={accessory._id} productType="accessory" />
             </div>
             <Footer />
         </main>

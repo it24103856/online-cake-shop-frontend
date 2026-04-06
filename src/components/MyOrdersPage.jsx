@@ -11,9 +11,6 @@ export default function MyOrdersPage() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    // Get user email from localStorage (Assuming you save it during login)
-    const userEmail = localStorage.getItem("userEmail") || "customer@example.com";
-
     useEffect(() => {
         fetchMyOrders();
     }, []);
@@ -21,8 +18,13 @@ export default function MyOrdersPage() {
     const fetchMyOrders = async () => {
         try {
             const token = localStorage.getItem("token");
+            if (!token) {
+                toast.error("Please login to view your orders");
+                return;
+            }
+            
             const response = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/orders/user/${userEmail}`, 
+                `${import.meta.env.VITE_BACKEND_URL}/orders/my-orders`, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );
             // Sorting to show newest orders first

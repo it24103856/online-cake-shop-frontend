@@ -9,7 +9,6 @@ import { toast } from "react-hot-toast";
 
 export default function CustomerTrackByEmail() {
     const [deliveries, setDeliveries] = useState([]);
-    const [currentUserEmail, setCurrentUserEmail] = useState("");
     const [loading, setLoading] = useState(true);
 
     const token = localStorage.getItem("token");
@@ -23,7 +22,6 @@ export default function CustomerTrackByEmail() {
                 });
                 if (res.data.success) {
                     setDeliveries(res.data.data);
-                    setCurrentUserEmail(res.data.currentUserEmail);
                 }
             } catch (error) {
                 toast.error("An error occurred while fetching data.");
@@ -76,29 +74,21 @@ export default function CustomerTrackByEmail() {
                         </div>
                     ) : (
                         deliveries.map((item) => {
-                            const isMyOrder = item.orderID?.customer?.email === currentUserEmail;
-                            
                             return (
                                 <div 
                                     key={item._id}
-                                    className={`relative rounded-[3rem] p-1 shadow-2xl transition-all duration-700 ${
-                                        isMyOrder ? "bg-black scale-[1.03] z-10" : "bg-neutral-100/50 scale-100"
-                                    }`}
+                                    className={`relative rounded-[3rem] p-1 shadow-2xl transition-all duration-700 bg-black scale-[1.03] z-10`}
                                 >
-                                    <div className={`rounded-[2.8rem] p-8 ${isMyOrder ? "bg-black text-white" : "bg-white text-black border border-neutral-100"}`}>
+                                    <div className={`rounded-[2.8rem] p-8 bg-black text-white`}>
                                         
                                         {/* Top Info */}
                                         <div className="flex justify-between items-start mb-10">
                                             <div className="space-y-1">
                                                 <div className="flex items-center gap-2">
-                                                    {isMyOrder && (
-                                                        <span className="bg-rose-500 text-white text-[8px] font-black px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-rose-500/20">
-                                                            <Star size={8} fill="white" /> YOUR ORDER
-                                                        </span>
-                                                    )}
-                                                    <span className={`text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${
-                                                        isMyOrder ? "border-white/10 bg-white/5" : "border-neutral-100 bg-neutral-50 text-neutral-400"
-                                                    }`}>
+                                                    <span className="bg-rose-500 text-white text-[8px] font-black px-2.5 py-1 rounded-full flex items-center gap-1 shadow-lg shadow-rose-500/20">
+                                                        <Star size={8} fill="white" /> YOUR ORDER
+                                                    </span>
+                                                    <span className={`text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/10 bg-white/5`}>
                                                         #{item._id.slice(-6).toUpperCase()}
                                                     </span>
                                                 </div>
@@ -106,7 +96,7 @@ export default function CustomerTrackByEmail() {
                                                     {item.orderID?.customer?.name || "Customer"}
                                                 </h3>
                                             </div>
-                                            <div className={`h-14 w-14 rounded-2xl grid place-items-center ${isMyOrder ? "bg-white text-black" : "bg-black text-white"}`}>
+                                            <div className={`h-14 w-14 rounded-2xl grid place-items-center bg-white text-black`}>
                                                 <Package size={24} />
                                             </div>
                                         </div>
@@ -115,7 +105,7 @@ export default function CustomerTrackByEmail() {
                                         <div className="mb-10 px-2">
                                             <div className="flex justify-between items-center relative">
                                                 {/* Connecting Line */}
-                                                <div className={`absolute left-0 right-0 h-[2px] top-1/2 -translate-y-1/2 ${isMyOrder ? "bg-white/10" : "bg-neutral-100"}`} />
+                                                <div className={`absolute left-0 right-0 h-[2px] top-1/2 -translate-y-1/2 bg-white/10`} />
                                                 <div className={`absolute left-0 h-[2px] top-1/2 -translate-y-1/2 bg-rose-500 transition-all duration-1000`} style={{ width: item.deliveryStatus === 'Delivered' ? '100%' : '50%' }} />
 
                                                 {/* Status Points */}
@@ -182,7 +172,7 @@ export default function CustomerTrackByEmail() {
                                     </div>
                                     
                                     {/* Ghost Icon Effect */}
-                                    <Truck className={`absolute -bottom-8 -right-8 opacity-[0.03] rotate-12 pointer-events-none ${isMyOrder ? "text-white" : "text-black"}`} size={180} />
+                                    <Truck className={`absolute -bottom-8 -right-8 opacity-[0.03] rotate-12 pointer-events-none text-white`} size={180} />
                                 </div>
                             );
                         })

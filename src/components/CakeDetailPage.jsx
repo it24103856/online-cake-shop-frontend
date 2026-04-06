@@ -4,6 +4,7 @@ import axios from "axios";
 import { Loader2, ArrowLeft, ShoppingCart, Star, Heart, ShieldCheck, Truck, Clock } from "lucide-react";
 import { toast } from "react-hot-toast";
 import Footer from "../components/Footer";
+import ReviewsList from "../components/ReviewsList";
 
 export default function CakeDetailPage() {
     const { id } = useParams();
@@ -118,9 +119,9 @@ export default function CakeDetailPage() {
                             </h1>
                             <div className="flex items-center gap-4 text-neutral-400 italic">
                                 <div className="flex gap-0.5">
-                                    {[...Array(5)].map((_, i) => <Star key={i} size={14} className="fill-rose-400 text-rose-400" />)}
+                                    {[...Array(5)].map((_, i) => <Star key={i} size={14} className={i < Math.round(cake.rating) ? "fill-rose-400 text-rose-400" : "text-neutral-300"} />)}
                                 </div>
-                                <span className="text-sm font-sans not-italic font-medium">4.9 (120+ Reviews)</span>
+                                <span className="text-sm font-sans not-italic font-medium">{cake.rating || 0} Rating</span>
                             </div>
                         </div>
 
@@ -190,6 +191,9 @@ export default function CakeDetailPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Reviews Section */}
+                <ReviewsList productId={cake._id} productType="cake" />
             </div>
             <Footer />
         </main>
