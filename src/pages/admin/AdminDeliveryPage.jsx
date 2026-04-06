@@ -63,9 +63,10 @@ export default function AdminDeliveryPage() {
         const selectedDriver = drivers.find(d => d._id === formData.driverID);
         if (!selectedDriver) return toast.error("Please select a driver from the list");
 
-        // Phone number එක තිබේදැයි check කිරීම
-        if (!formData.driverPhone || formData.driverPhone.trim() === "") {
-            return toast.error("Driver phone number is required!");
+        // Phone number validation
+        const phoneRegex = /^[0-9]{10}$/;
+        if (!phoneRegex.test(formData.driverPhone)) {
+            return toast.error("Driver phone number must be exactly 10 digits (e.g. 0712345678)!");
         }
 
         setSubmitting(true);
@@ -132,13 +133,13 @@ export default function AdminDeliveryPage() {
                         </select>
 
                         {/* Phone number input එකක් එක් කළා - පෙනුම වෙනස් නොවේ */}
-                        <input required placeholder="Driver Phone Number" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
-                            value={formData.driverPhone} onChange={(e) => setFormData({ ...formData, driverPhone: e.target.value })} />
+                        <input required type="text" maxLength="10" placeholder="Driver Phone Number (10 digits)" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
+                            value={formData.driverPhone} onChange={(e) => setFormData({ ...formData, driverPhone: e.target.value.replace(/[^0-9]/g, '') })} />
 
                         <input required placeholder="Vehicle Plate No" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
                             value={formData.vehicleNumber} onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value })} />
                         
-                        <input required type="text" placeholder="Est. Time" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
+                        <input required type="time" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
                             value={formData.estimatedTime} onChange={(e) => setFormData({ ...formData, estimatedTime: e.target.value })} />
                         
                         <button type="submit" disabled={submitting} className="w-full h-14 bg-black text-white rounded-2xl font-black uppercase tracking-widest hover:bg-rose-600 transition-colors">
