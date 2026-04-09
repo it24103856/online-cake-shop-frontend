@@ -17,8 +17,9 @@ export default function OrderPage() {
     const [allItems, setAllItems] = useState([]);
     
     const [formData, setFormData] = useState({
-        name: "", phone: "", city: "", address: "", notes: ""
+        name: "", email: "", phone: "", city: "", address: "", notes: ""
     });
+    const [isEditingAddress, setIsEditingAddress] = useState(false);
 
     useEffect(() => {
         const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -28,7 +29,31 @@ export default function OrderPage() {
         }
         setCart(savedCart);
         fetchAllProducts();
+        fetchUserProfile();
     }, [navigate]);
+
+    const fetchUserProfile = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/users`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const user = response.data;
+            if (user) {
+                setFormData(prev => ({
+                    ...prev,
+                    name: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+                    email: user.email || "",
+                    phone: user.phone || "",
+                    address: user.address || "",
+                    city: ""
+                }));
+            }
+        } catch (error) {
+            console.error("Error fetching user profile:", error);
+        }
+    };
 
     const fetchAllProducts = async () => {
         try {
@@ -107,9 +132,9 @@ export default function OrderPage() {
         const orderData = {
             customer: {
                 name: formData.name,
-                email: "customer@example.com", // Get user email here
+                email: formData.email || "customer@example.com",
                 phone: formData.phone,
-                address: `${formData.address}, ${formData.city}`
+                address: `${formData.address}${formData.city ? ', ' + formData.city : ''}`
             },
             items: cart.map(item => ({
                 productID: item._id,
@@ -167,13 +192,31 @@ export default function OrderPage() {
                 <div className="grid lg:grid-cols-2 gap-12 items-start">
                     {/* Left: Shipping Form */}
                     <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-neutral-100">
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                            <Truck className="text-rose-500" size={20} /> Shipping Information
-                        </h2>
+                        <div className="flex justify-between items-center mb-6">
+                            <h2 className="text-xl font-bold flex items-center gap-2">
+                                <Truck className="text-rose-500" size={20} /> Shipping Information
+                            </h2>
+                            <button 
+                                type="button" 
+                                onClick={() => setIsEditingAddress(!isEditingAddress)} 
+                                className="text-[10px] font-black uppercase tracking-widest bg-rose-50 text-rose-500 px-4 py-2 rounded-full hover:bg-rose-500 hover:text-white transition-all"
+                            >
+                                {isEditingAddress ? "Lock Address" : "Change Address"}
+                            </button>
+                        </div>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="relative">
                                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300" size={18} />
-                                <input type="text" name="name" placeholder="Recipient's Name" required className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all" onChange={handleInputChange} />
+                                <input 
+                                    type="text" 
+                                    name="name" 
+                                    value={formData.name}
+                                    readOnly={!isEditingAddress}
+                                    placeholder="Recipient's Name" 
+                                    required 
+                                    className={`w-full pl-12 pr-4 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all ${!isEditingAddress ? 'bg-neutral-100 text-neutral-500 cursor-not-allowed' : 'bg-neutral-50 text-neutral-900'}`} 
+                                    onChange={handleInputChange} 
+                                />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="relative">
@@ -181,22 +224,49 @@ export default function OrderPage() {
                                     <input 
                                         type="tel" 
                                         name="phone" 
+                                        value={formData.phone}
+                                        readOnly={!isEditingAddress}
                                         placeholder="Phone Number (10 digits)" 
                                         required 
                                         pattern="[0-9]{10}"
                                         maxLength="10"
                                         title="Please enter exactly 10 digits"
-                                        className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all" 
+                                        className={`w-full pl-12 pr-4 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all ${!isEditingAddress ? 'bg-neutral-100 text-neutral-500 cursor-not-allowed' : 'bg-neutral-50 text-neutral-900'}`} 
                                         onChange={handleInputChange} 
                                     />
                                 </div>
                                 <div className="relative">
                                     <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300" size={18} />
-                                    <input type="text" name="city" placeholder="City" required className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all" onChange={handleInputChange} />
+                                    <input 
+                                        type="text" 
+                                        name="city" 
+                                        value={formData.city}
+                                        readOnly={!isEditingAddress}
+                                        placeholder="City" 
+                                        required 
+                                        className={`w-full pl-12 pr-4 py-4 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all ${!isEditingAddress ? 'bg-neutral-100 text-neutral-500 cursor-not-allowed' : 'bg-neutral-50 text-neutral-900'}`} 
+                                        onChange={handleInputChange} 
+                                    />
                                 </div>
                             </div>
-                            <textarea name="address" placeholder="Detailed Street Address" rows="3" required className="w-full p-4 bg-neutral-50 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all" onChange={handleInputChange}></textarea>
-                            <textarea name="notes" placeholder="Special instructions for the baker..." rows="2" className="w-full p-4 bg-neutral-50 rounded-2xl outline-none text-sm italic focus:ring-2 focus:ring-rose-100 transition-all" onChange={handleInputChange}></textarea>
+                            <textarea 
+                                name="address" 
+                                value={formData.address}
+                                readOnly={!isEditingAddress}
+                                placeholder="Detailed Street Address" 
+                                rows="3" 
+                                required 
+                                className={`w-full p-4 rounded-2xl outline-none focus:ring-2 focus:ring-rose-100 transition-all ${!isEditingAddress ? 'bg-neutral-100 text-neutral-500 cursor-not-allowed' : 'bg-neutral-50 text-neutral-900'}`} 
+                                onChange={handleInputChange}
+                            ></textarea>
+                            <textarea 
+                                name="notes" 
+                                value={formData.notes}
+                                placeholder="Special instructions for the baker..." 
+                                rows="2" 
+                                className="w-full p-4 bg-neutral-50 rounded-2xl outline-none text-sm italic focus:ring-2 focus:ring-rose-100 transition-all text-neutral-900" 
+                                onChange={handleInputChange}
+                            ></textarea>
 
                             <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase tracking-widest hover:bg-rose-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-neutral-200 disabled:bg-neutral-400">
                                 {isSubmitting ? <Loader2 className="animate-spin" /> : <CreditCard size={20} />}

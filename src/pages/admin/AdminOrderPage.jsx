@@ -113,22 +113,28 @@ export default function AdminOrderPage() {
                                     </td>
                                     <td className="p-5 font-bold text-neutral-900">LKR.{order.totalPrice.toFixed(2)}</td>
                                     <td className="p-5">
-                                        <select 
-                                            value={order.status}
-                                            disabled={updatingId === order._id}
-                                            onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
-                                            className={`text-xs font-bold px-3 py-2 rounded-lg border-none outline-none cursor-pointer transition-all
-                                                ${order.status === 'pending' ? 'bg-amber-50 text-amber-600' : ''}
-                                                ${order.status === 'delivered' ? 'bg-emerald-50 text-emerald-600' : ''}
-                                                ${order.status === 'cancelled' ? 'bg-rose-50 text-rose-600' : ''}
-                                                ${order.status === 'processing' ? 'bg-blue-50 text-blue-600' : ''}
-                                                ${order.status === 'shipped' ? 'bg-purple-50 text-purple-600' : ''}
-                                            `}
-                                        >
-                                            {statusOptions.map(opt => (
-                                                <option key={opt} value={opt}>{opt.toUpperCase()}</option>
-                                            ))}
-                                        </select>
+                                        <div className="flex flex-col gap-1 items-start">
+                                            <select 
+                                                value={order.status}
+                                                disabled={updatingId === order._id || order.paymentStatus !== 'Paid'}
+                                                onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                                                className={`text-xs font-bold px-3 py-2 rounded-lg border-none outline-none cursor-pointer transition-all
+                                                    ${order.status === 'pending' ? 'bg-amber-50 text-amber-600' : ''}
+                                                    ${order.status === 'delivered' ? 'bg-emerald-50 text-emerald-600' : ''}
+                                                    ${order.status === 'cancelled' ? 'bg-rose-50 text-rose-600' : ''}
+                                                    ${order.status === 'processing' ? 'bg-blue-50 text-blue-600' : ''}
+                                                    ${order.status === 'shipped' ? 'bg-purple-50 text-purple-600' : ''}
+                                                    ${order.paymentStatus !== 'Paid' ? 'opacity-60 cursor-not-allowed' : ''}
+                                                `}
+                                            >
+                                                {statusOptions.map(opt => (
+                                                    <option key={opt} value={opt}>{opt.toUpperCase()}</option>
+                                                ))}
+                                            </select>
+                                            {order.paymentStatus !== 'Paid' && (
+                                                <span className="text-[10px] text-rose-500 italic font-semibold">Payment required to unlock</span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="p-5 text-right">
                                         <button 
