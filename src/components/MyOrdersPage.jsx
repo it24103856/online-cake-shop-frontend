@@ -84,7 +84,7 @@ export default function MyOrdersPage() {
                                         </div>
                                         <div>
                                             <p className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-1">Order ID</p>
-                                            <p className="text-sm font-bold text-neutral-700">#{order._id.slice(-8).toUpperCase()}</p>
+                                            <p className="text-xs font-bold text-neutral-700">#{order._id.toUpperCase()}</p>
                                         </div>
                                         <div>
                                             <p className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold mb-1">Total Amount</p>

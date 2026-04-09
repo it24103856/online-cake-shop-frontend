@@ -105,7 +105,7 @@ export default function DriverDashboard() {
                 {tasks.map(task => (
                     <div key={task._id} className="rounded-3xl border border-white bg-white p-5 shadow-sm">
                         <div className="flex justify-between items-start mb-4">
-                            <span className="text-xs font-black text-neutral-400 italic">#{task.orderID?._id.slice(-6).toUpperCase()}</span>
+                            <span className="text-xs font-black text-neutral-400 italic">#{task.orderID?._id.slice(-8).toUpperCase()}</span>
                             <span className="bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-600 rounded-lg uppercase">{task.deliveryStatus}</span>
                         </div>
 

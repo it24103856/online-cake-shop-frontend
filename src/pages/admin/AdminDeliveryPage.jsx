@@ -115,7 +115,7 @@ export default function AdminDeliveryPage() {
                         <select required className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-bold"
                             value={formData.orderID} onChange={(e) => setFormData({ ...formData, orderID: e.target.value })}>
                             <option value="">Select Order</option>
-                            {orders.map(o => <option key={o._id} value={o._id}>#{o._id.slice(-6).toUpperCase()}</option>)}
+                            {orders.map(o => <option key={o._id} value={o._id}>#{o._id.slice(-8).toUpperCase()}</option>)}
                         </select>
 
                         <select required className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
@@ -161,7 +161,7 @@ export default function AdminDeliveryPage() {
                         <tbody className="divide-y divide-neutral-50">
                             {deliveries.map(item => (
                                 <tr key={item._id} className="hover:bg-neutral-50 transition-all">
-                                    <td className="px-6 py-4 font-black text-neutral-700">#{item.orderID?._id.slice(-6).toUpperCase() || "N/A"}</td>
+                                    <td className="px-6 py-4 font-black text-neutral-700">#{item.orderID?._id.slice(-8).toUpperCase() || "N/A"}</td>
                                     <td className="px-6 py-4 font-bold text-sm">
                                         <div>{item.deliveryPerson?.name}</div>
                                         <div className="text-[10px] text-neutral-400 font-medium">{item.deliveryPerson?.phone}</div>
@@ -221,7 +221,7 @@ export default function AdminDeliveryPage() {
                             <div className="flex justify-between items-start mb-6">
                                 <div>
                                     <h3 className="text-2xl font-black italic uppercase">Delivery Review</h3>
-                                    <p className="text-sm font-bold text-neutral-400">Order: #{selectedDelivery.orderID?._id.slice(-6).toUpperCase()}</p>
+                                    <p className="text-sm font-bold text-neutral-400">Order: #{selectedDelivery.orderID?._id.slice(-8).toUpperCase()}</p>
                                 </div>
                                 <span className={`px-4 py-2 rounded-2xl text-[10px] font-black uppercase ${statusClasses[selectedDelivery.deliveryStatus]}`}>
                                     {selectedDelivery.deliveryStatus}

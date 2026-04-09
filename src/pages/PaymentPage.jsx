@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -18,9 +18,34 @@ export default function PaymentPage() {
     const [loading, setLoading] = useState(false);
     const [receiptFile, setReceiptFile] = useState(null); // Keep the full file object
     const [referenceNumber, setReferenceNumber] = useState("");
+    const [paymentExists, setPaymentExists] = useState(false);
 
     const orderID = state?.orderID;
     const totalAmount = state?.totalAmount || 0;
+
+    useEffect(() => {
+        const checkExistingPayment = async () => {
+            if (!orderID) return;
+            try {
+                const token = localStorage.getItem("token");
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/payments/my-payments`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                if (response.data && response.data.success) {
+                    const exists = response.data.data.some(p => {
+                        const pid = typeof p.orderID === 'object' ? p.orderID?._id : p.orderID;
+                        return pid === orderID;
+                    });
+                    if (exists) {
+                        setPaymentExists(true);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to check existing payments");
+            }
+        };
+        checkExistingPayment();
+    }, [orderID]);
 
     if (!orderID) {
         return (
@@ -119,12 +144,24 @@ export default function PaymentPage() {
                 <div className="grid lg:grid-cols-5 gap-10">
                     {/* Method Selection */}
                     <div className="lg:col-span-2 space-y-4">
-                        <div onClick={() => setMethod('Cash on Delivery')} className={`p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all ${method === 'Cash on Delivery' ? 'border-rose-500 bg-white shadow-xl' : 'border-white bg-white/50'}`}>
+                        <div 
+                            onClick={() => !paymentExists && setMethod('Cash on Delivery')} 
+                            className={`p-8 rounded-[2.5rem] border-2 transition-all 
+                                ${paymentExists ? 'opacity-50 cursor-not-allowed border-white bg-white/50' : 'cursor-pointer'}
+                                ${method === 'Cash on Delivery' ? 'border-rose-500 bg-white shadow-xl' : (!paymentExists && 'border-white bg-white/50')}
+                            `}
+                        >
                             <Truck size={32} className={method === 'Cash on Delivery' ? 'text-rose-500' : 'text-neutral-400'} />
                             <h3 className="text-xl font-bold mt-4">Cash on Delivery</h3>
                         </div>
 
-                        <div onClick={() => setMethod('Bank Transfer')} className={`p-8 rounded-[2.5rem] border-2 cursor-pointer transition-all ${method === 'Bank Transfer' ? 'border-rose-500 bg-white shadow-xl' : 'border-white bg-white/50'}`}>
+                        <div 
+                            onClick={() => !paymentExists && setMethod('Bank Transfer')} 
+                            className={`p-8 rounded-[2.5rem] border-2 transition-all 
+                                ${paymentExists ? 'opacity-50 cursor-not-allowed border-white bg-white/50' : 'cursor-pointer'}
+                                ${method === 'Bank Transfer' ? 'border-rose-500 bg-white shadow-xl' : (!paymentExists && 'border-white bg-white/50')}
+                            `}
+                        >
                             <Landmark size={32} className={method === 'Bank Transfer' ? 'text-rose-500' : 'text-neutral-400'} />
                             <h3 className="text-xl font-bold mt-4">Bank Transfer</h3>
                         </div>
@@ -132,7 +169,18 @@ export default function PaymentPage() {
 
                     {/* Form Section */}
                     <div className="lg:col-span-3">
-                        {!method ? (
+                        {paymentExists ? (
+                            <div className="h-full flex flex-col items-center justify-center p-12 bg-rose-50 border-2 border-rose-200 rounded-[3rem] text-center">
+                                <ShieldCheck size={64} className="text-emerald-500 mb-4" />
+                                <h3 className="text-2xl font-bold text-neutral-800 mb-2">Payment Already Initiated</h3>
+                                <p className="text-neutral-500 max-w-sm mb-8 relative">
+                                    We have already recorded a payment log for Order ID <span className="font-bold text-neutral-900 border-b-2 border-rose-300">#{orderID}</span>. Multiple payments are not allowed.
+                                </p>
+                                <button onClick={() => navigate("/my-payments")} className="w-full py-4 bg-black text-white rounded-2xl font-bold hover:bg-rose-500 transition-all uppercase tracking-widest text-xs">
+                                    View My Payments
+                                </button>
+                            </div>
+                        ) : !method ? (
                             <div className="h-full flex flex-col items-center justify-center p-12 bg-white/40 border-2 border-dashed border-neutral-200 rounded-[3rem] text-neutral-400 italic">
                                 <CreditCard size={48} className="mb-4 opacity-20" />
                                 <p>Please select a payment method</p>

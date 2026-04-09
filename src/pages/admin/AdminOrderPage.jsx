@@ -104,7 +104,7 @@ export default function AdminOrderPage() {
                             {orders.map((order) => (
                                 <tr key={order._id} className="hover:bg-neutral-50/30 transition-colors">
                                     <td className="p-5">
-                                        <p className="font-bold text-sm text-neutral-800">#{order._id.slice(-6).toUpperCase()}</p>
+                                        <p className="font-bold text-sm text-neutral-800">#{order._id.slice(-8).toUpperCase()}</p>
                                         <p className="text-xs text-neutral-400">{new Date(order.createdAt).toLocaleDateString()}</p>
                                     </td>
                                     <td className="p-5">
