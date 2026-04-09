@@ -40,7 +40,9 @@ export default function DriverDashboard() {
             const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/deliveries/my-tasks`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
-            setTasks(res.data.data);
+            const myPhone = res.data.driverPhone;
+            const assignedTasks = res.data.data.filter(task => task.deliveryPerson?.phone === myPhone);
+            setTasks(assignedTasks);
         } catch (error) { 
             toast.error("Failed to load tasks"); 
         }
@@ -112,8 +114,10 @@ export default function DriverDashboard() {
                         <div className="flex items-start gap-3 text-neutral-700 mb-6">
                             <MapPin size={18} className="text-rose-500 mt-1 shrink-0" />
                             <div>
-                                <p className="text-sm font-bold">Delivery Address</p>
-                                <p className="text-xs text-gray-500">{task.orderID?.address || "No address provided"}</p>
+                                <p className="text-sm font-bold w-full">Customer Details</p>
+                                <p className="text-xs text-gray-800 font-bold mt-1">{task.orderID?.customer?.name}</p>
+                                <p className="text-xs text-gray-500">{task.orderID?.customer?.phone || "No phone provided"}</p>
+                                <p className="text-xs text-gray-500 mt-1">{task.orderID?.customer?.address || "No address provided"}</p>
                             </div>
                         </div>
 

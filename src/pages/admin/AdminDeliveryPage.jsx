@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { Truck, Loader2, Plus, Eye, X } from "lucide-react";
+import { Truck, Loader2, Plus, Eye, X, Trash2 } from "lucide-react";
 
 export default function AdminDeliveryPage() {
     const [deliveries, setDeliveries] = useState([]);
@@ -54,6 +54,19 @@ export default function AdminDeliveryPage() {
             loadData(); 
         } catch (error) {
             toast.error("Status update failed");
+        }
+    };
+
+    const handleDelete = async (deliveryId) => {
+        if (!window.confirm("Are you sure you want to delete this delivery assignment?")) return;
+        try {
+            await axios.delete(`${BASE_URL}/deliveries/${deliveryId}`, 
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            toast.success("Delivery removed successfully");
+            loadData(); 
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to delete delivery");
         }
     };
 
@@ -132,9 +145,8 @@ export default function AdminDeliveryPage() {
                             ))}
                         </select>
 
-                        {/* Phone number input එකක් එක් කළා - පෙනුම වෙනස් නොවේ */}
-                        <input required type="text" maxLength="10" placeholder="Driver Phone Number (10 digits)" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
-                            value={formData.driverPhone} onChange={(e) => setFormData({ ...formData, driverPhone: e.target.value.replace(/[^0-9]/g, '') })} />
+                        <input required type="text" maxLength="10" placeholder="Driver Phone Number (10 digits)" className="w-full h-14 bg-neutral-100 text-neutral-500 cursor-not-allowed rounded-2xl border border-neutral-200 px-4 font-medium"
+                            value={formData.driverPhone} readOnly />
 
                         <input required placeholder="Vehicle Plate No" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
                             value={formData.vehicleNumber} onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value })} />
@@ -194,6 +206,13 @@ export default function AdminDeliveryPage() {
                                             title="View Details & Proof"
                                         >
                                             <Eye size={18} />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDelete(item._id)} 
+                                            className="p-2 rounded-xl transition-all bg-neutral-100 text-rose-500 hover:bg-rose-500 hover:text-white"
+                                            title="Delete Assignment"
+                                        >
+                                            <Trash2 size={18} />
                                         </button>
                                     </td>
                                 </tr>
