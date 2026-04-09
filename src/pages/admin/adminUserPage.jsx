@@ -1,4 +1,4 @@
-import { Trash2, Pencil, ShieldBan, ShieldCheck } from "lucide-react";
+import { Trash2, Pencil, ShieldBan, ShieldCheck, Search, Filter, Users, UserCheck, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState, Fragment } from "react";
@@ -11,18 +11,42 @@ export default function AdminUserPage() {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [stats, setStats] = useState({ totalUsers: 0, activeUsers: 0, loyalCustomers: 0 });
   const navigate = useNavigate();
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   const fetchUsers = async () => {
     const token = localStorage.getItem("token");
     try {
-      const response = await axios.get(`${backendUrl}/users/all-users`, { headers: { Authorization: `Bearer ${token}` } });
+      const queryParams = new URLSearchParams({
+        search,
+        role: roleFilter,
+        status: statusFilter
+      });
+      const response = await axios.get(`${backendUrl}/users/all-users?${queryParams}`, { headers: { Authorization: `Bearer ${token}` } });
       setUsers(response.data);
     } catch (error) { toast.error("Failed to load users"); } finally { setLoading(false); }
   };
 
-  useEffect(() => { fetchUsers(); }, []);
+  const fetchStats = async () => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.get(`${backendUrl}/users/stats`, { headers: { Authorization: `Bearer ${token}` } });
+      setStats(response.data);
+    } catch (error) { console.error("Failed to load stats"); }
+  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchUsers();
+    }, 500); // 500ms debounce
+    return () => clearTimeout(timer);
+  }, [search, roleFilter, statusFilter]);
+
+  useEffect(() => { fetchStats(); }, []);
 
   const handleRoleChange = async (user, newRole) => {
     const token = localStorage.getItem("token");
@@ -60,9 +84,50 @@ export default function AdminUserPage() {
     <div className="w-full min-h-screen bg-[#FDFDFD] p-10">
       <Toaster position="top-center" />
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-[Playfair_Display] font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-500 font-[Inter]">Admin control panel for user accounts</p>
+        <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div>
+            <h1 className="text-4xl font-[Playfair_Display] font-bold text-gray-900">User Management</h1>
+            <p className="text-gray-500 font-[Inter]">Admin control panel for user accounts</p>
+          </div>
+          
+          <div className="flex gap-4">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+              <div className="p-3 bg-blue-50 rounded-xl text-blue-600"><Users size={24} /></div>
+              <div><p className="text-xs text-gray-400 font-bold uppercase truncate">Total Users</p><p className="text-xl font-black">{stats.totalUsers}</p></div>
+            </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+              <div className="p-3 bg-green-50 rounded-xl text-green-600"><UserCheck size={24} /></div>
+              <div><p className="text-xs text-gray-400 font-bold uppercase truncate">Active</p><p className="text-xl font-black">{stats.activeUsers}</p></div>
+            </div>
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100 flex items-center gap-4">
+              <div className="p-3 bg-yellow-50 rounded-xl text-yellow-600"><Star size={24} /></div>
+              <div><p className="text-xs text-gray-400 font-bold uppercase truncate">Loyal</p><p className="text-xl font-black">{stats.loyalCustomers}</p></div>
+            </div>
+          </div>
+        </div>
+
+        {/* Search and Filters */}
+        <div className="mb-8 flex flex-col md:flex-row items-center gap-4">
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <input type="text" placeholder="Search by name or email..." value={search} onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-12 pr-4 py-3 bg-white rounded-2xl border border-gray-200 focus:border-[#00AEEF] outline-none transition-all shadow-sm" />
+          </div>
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <select value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}
+              className="bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-2xl outline-none focus:border-[#00AEEF] shadow-sm cursor-pointer">
+              <option value="all">All Roles</option>
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+              <option value="Driver">Driver</option>
+            </select>
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}
+              className="bg-white border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded-2xl outline-none focus:border-[#00AEEF] shadow-sm cursor-pointer">
+              <option value="all">All Status</option>
+              <option value="active">Active</option>
+              <option value="blocked">Blocked</option>
+            </select>
+          </div>
         </div>
 
         <div className="bg-white rounded-3xl shadow-sm hover:shadow-xl overflow-hidden transition-all duration-500 border border-gray-100">
@@ -77,6 +142,7 @@ export default function AdminUserPage() {
                     <th className="px-6 py-4 text-xs font-black uppercase tracking-widest">Name</th>
                     <th className="px-6 py-4 text-xs font-black uppercase tracking-widest">Email</th>
                     <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest">Role</th>
+                    <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest">Loyalty</th>
                     <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest">Status</th>
                     <th className="px-6 py-4 text-center text-xs font-black uppercase tracking-widest">Actions</th>
                   </tr>
@@ -98,6 +164,18 @@ export default function AdminUserPage() {
                           <option value="admin">Admin</option>
                           <option value="Driver">Driver</option>
                         </select>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {item.isLoyal ? (
+                          <div className="flex flex-col items-center">
+                            <span className="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm">
+                              <Star size={10} fill="currentColor" /> LOYAL
+                            </span>
+                            <span className="text-[9px] text-gray-400 mt-1">{item.totalOrders} Orders / ${item.totalSpent}</span>
+                          </div>
+                        ) : (
+                          <span className="text-[10px] text-gray-400">-</span>
+                        )}
                       </td>
                       <td className="px-6 py-4 text-center">
                         <span className={`px-3 py-1 rounded-full text-[10px] font-bold ${item.isblocked ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}>

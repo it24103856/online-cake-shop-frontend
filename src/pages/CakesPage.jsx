@@ -120,12 +120,11 @@ export default function ShopPage() {
                                             </div>
                                         </div>
                                         
-                                        {/* Subtle Rating */}
-                                        <div className="flex items-center gap-1 mt-3">
-                                            {[...Array(5)].map((_, i) => (
-                                                <Star key={i} size={12} className={i < (cake.rating || 5) ? "fill-rose-400 text-rose-400" : "text-neutral-200"} />
-                                            ))}
-                                            <span className="text-[10px] text-neutral-400 font-bold ml-1 uppercase tracking-tighter">Verified Recipe</span>
+                                        {/* Rating Display */}
+                                        <div className="flex items-center gap-2 mt-3">
+                                            <Star size={14} className="fill-rose-400 text-rose-400" />
+                                            <span className="text-sm font-bold text-neutral-900">{cake.rating ? cake.rating.toFixed(1) : "0"}</span>
+                                            <span className="text-[10px] text-neutral-400 italic">(from reviews)</span>
                                         </div>
                                     </div>
                                 </div>

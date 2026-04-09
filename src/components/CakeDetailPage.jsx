@@ -117,11 +117,10 @@ export default function CakeDetailPage() {
                             <h1 className="text-5xl md:text-6xl font-serif font-bold text-neutral-900 leading-[1.1]">
                                 {cake.name}
                             </h1>
-                            <div className="flex items-center gap-4 text-neutral-400 italic">
-                                <div className="flex gap-0.5">
-                                    {[...Array(5)].map((_, i) => <Star key={i} size={14} className={i < Math.round(cake.rating) ? "fill-rose-400 text-rose-400" : "text-neutral-300"} />)}
-                                </div>
-                                <span className="text-sm font-sans not-italic font-medium">{cake.rating || 0} Rating</span>
+                            <div className="flex items-center gap-3">
+                                <Star size={18} className="fill-rose-400 text-rose-400" />
+                                <span className="text-lg font-bold text-neutral-900">{cake.rating || 0}</span>
+                                <span className="text-sm text-neutral-400 italic">Average Rating</span>
                             </div>
                         </div>
 
@@ -151,14 +150,16 @@ export default function CakeDetailPage() {
                             <div className="flex items-center bg-white border border-neutral-100 rounded-2xl p-1 shadow-sm">
                                 <button
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="w-12 h-12 flex items-center justify-center hover:bg-neutral-50 rounded-xl transition-colors text-xl font-light"
+                                    className="w-12 h-12 flex items-center justify-center hover:bg-neutral-50 disabled:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors text-xl font-light"
+                                    disabled={quantity <= 1}
                                 >
                                     −
                                 </button>
                                 <span className="w-12 text-center font-bold text-lg">{quantity}</span>
                                 <button
-                                    onClick={() => setQuantity(quantity + 1)}
-                                    className="w-12 h-12 flex items-center justify-center hover:bg-neutral-50 rounded-xl transition-colors text-xl font-light"
+                                    onClick={() => setQuantity(Math.min(cake.quantity, quantity + 1))}
+                                    disabled={quantity >= cake.quantity}
+                                    className="w-12 h-12 flex items-center justify-center hover:bg-neutral-50 disabled:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors text-xl font-light"
                                 >
                                     +
                                 </button>
