@@ -2,21 +2,22 @@ import { Routes, Route, useNavigate, Link, useLocation } from "react-router-dom"
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { 
-    LayoutDashboard, ShieldCheck, Home, LogOut, Cake, ShoppingBag, Users, CreditCard, Puzzle, Settings, Bell
+    LayoutDashboard, ShieldCheck, Home, LogOut, Cake, ShoppingBag, Users, CreditCard, Puzzle, Settings, Bell, Truck
 } from "lucide-react";
 
-// Pages
-import AdminCakePage from "./admin/adminCakePage";
-import AdminCakeAddPage from "./admin/adminCakeAddPage";
-import AdminCakeUpdatePage from "./admin/adminCakeUpadate";
-import AdminAccesoriespage from "./admin/adminAccesoriespage";
-import AdminAcessoriesAddpage from "./admin/adminAcessoriesAddpage";
-import AdminAceesororiesUpadtepage from "./admin/adminAceesororiesUpadtepage";
+// Pages - All using PascalCase for consistency
+import AdminCakePage from "./admin/AdminCakePage";
+import AdminCakeAddPage from "./admin/AdminCakeAddPage";
+import AdminCakeUpdatePage from "./admin/AdminCakeUpdatePage";
+import AdminAccessoriesPage from "./admin/AdminAccessoriesPage";
+import AdminAccessoriesAddPage from "./admin/AdminAccessoriesAddPage";
+import AdminAccessoriesUpdatePage from "./admin/AdminAccessoriesUpdatePage";
 import AdminOrderPage from "./admin/AdminOrderPage";
-import AdminUserPage from "./admin/adminUserPage";
-import AdminPaymentDashboard from "./admin/AdminPaymentDashboard";
-import AdminFeedback from "./admin/AdminFeedbackPage";
+import AdminUserPage from "./admin/AdminUserPage";
+import AdminPaymentPage from "./admin/AdminPaymentPage";
+import AdminFeedbackPage from "./admin/AdminFeedbackPage";
 import AdminDeliveryPage from "./admin/AdminDeliveryPage";
+import AdminDriverPage from "./admin/AdminDriverPage";
 
 export default function AdminPage() {
     const [user, setUser] = useState(null);
@@ -108,6 +109,7 @@ export default function AdminPage() {
                             <TopNavLink to="/admin/orders" icon={<ShoppingBag />} label="Orders" />
                             <TopNavLink to="/admin/payments" icon={<CreditCard />} label="Payments" />
                             <TopNavLink to="/admin/feedback" icon={<Bell />} label="Feedback" />
+                            <TopNavLink to="/admin/drivers" icon={<Truck />} label="Drivers" />
                             <TopNavLink to="/admin/delivery" icon={<Settings />} label="Delivery" />
                         </div>
                     </div>
@@ -142,13 +144,14 @@ export default function AdminPage() {
                             <Route path="/cakes" element={<AdminCakePage />} />
                             <Route path="/cakes/add" element={<AdminCakeAddPage />} />
                             <Route path="/cakes/edit/:id" element={<AdminCakeUpdatePage />} />
-                            <Route path="/accessories" element={<AdminAccesoriespage />} />
-                            <Route path="/accessories/add" element={<AdminAcessoriesAddpage />} />
-                            <Route path="/accessories/edit/:id" element={<AdminAceesororiesUpadtepage />} />
+                            <Route path="/accessories" element={<AdminAccessoriesPage />} />
+                            <Route path="/accessories/add" element={<AdminAccessoriesAddPage />} />
+                            <Route path="/accessories/edit/:id" element={<AdminAccessoriesUpdatePage />} />
                             <Route path="/orders" element={<AdminOrderPage />} />
                             <Route path="/users" element={<AdminUserPage />} />
-                            <Route path="/payments" element={<AdminPaymentDashboard />} />
-                            <Route path="/feedback" element={<AdminFeedback />} />
+                            <Route path="/payments" element={<AdminPaymentPage />} />
+                            <Route path="/feedback" element={<AdminFeedbackPage />} />
+                            <Route path="/drivers" element={<AdminDriverPage />} />
                             <Route path="/delivery" element={<AdminDeliveryPage />} />
                             
                             <Route path="/" element={

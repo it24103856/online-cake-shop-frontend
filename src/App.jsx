@@ -7,6 +7,7 @@ import LoginPage from './pages/login';
 import RegisterPage from './pages/register';
 import LinkPage from './pages/linkPage';
 import AdminPage from './pages/adminPage';
+import DriverDashboard from './pages/DriverDashboard';
 
 import ForgotPassword from "./pages/ForgotPassword";
 
@@ -20,6 +21,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/forget-password" element={<ForgotPassword />} />
+            <Route path="/driver-dashboard" element={<DriverDashboard />} />
             
             {/* Admin Route should come first */}
             <Route path="/admin/*" element={<AdminPage />} />

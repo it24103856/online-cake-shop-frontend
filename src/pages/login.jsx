@@ -9,14 +9,15 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [loginType, setLoginType] = useState("user"); // "user" or "driver"
   const navigate = useNavigate();
 
 const handleRedirect = (role) => {
  
   if (role === "admin") {
     navigate("/admin");
-  } else if (role === "Driver") {
-    navigate("/driver");
+  } else if (role === "driver") {
+    navigate("/driver-dashboard");
   } else {
     navigate("/"); 
   }
@@ -45,12 +46,24 @@ const handleRedirect = (role) => {
     if (e) e.preventDefault();
     setIsLoading(true);
     try {
-      const res = await axios.post(import.meta.env.VITE_BACKEND_URL + "/users/login", { email, password });
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-      localStorage.setItem("role", res.data.role);
-      handleRedirect(res.data.role);
-      toast.success("Ready for something sweet?");
+      let res;
+      if (loginType === "driver") {
+        // Driver login
+        res = await axios.post(import.meta.env.VITE_BACKEND_URL + "/drivers/login", { email, password });
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.driver));
+        localStorage.setItem("role", "driver");
+        handleRedirect("driver");
+        toast.success("Welcome Driver!");
+      } else {
+        // User login
+        res = await axios.post(import.meta.env.VITE_BACKEND_URL + "/users/login", { email, password });
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("role", res.data.role);
+        handleRedirect(res.data.role);
+        toast.success("Ready for something sweet?");
+      }
     } catch (err) {
       toast.error(err.response?.data?.message || "Login failed");
     } finally {
@@ -115,6 +128,32 @@ const handleRedirect = (role) => {
                 Sign In
               </h2>
               <div className="h-1 w-12 bg-rose-400 mt-2 rounded-full"></div>
+
+              {/* Login Type Toggle */}
+              <div className="flex gap-2 mt-6 bg-gray-100 p-1 rounded-full">
+                <button
+                  type="button"
+                  onClick={() => setLoginType("user")}
+                  className={`flex-1 py-2 px-4 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    loginType === "user"
+                      ? "bg-rose-500 text-white"
+                      : "bg-transparent text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  Customer
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLoginType("driver")}
+                  className={`flex-1 py-2 px-4 rounded-full text-[10px] font-bold uppercase tracking-widest transition-all ${
+                    loginType === "driver"
+                      ? "bg-rose-500 text-white"
+                      : "bg-transparent text-gray-600 hover:text-gray-800"
+                  }`}
+                >
+                  Driver
+                </button>
+              </div>
             </div>
 
             <div className="w-full space-y-5">
@@ -161,7 +200,7 @@ const handleRedirect = (role) => {
               disabled={isLoading}
               className="w-full bg-[#1A1A1A] text-white font-bold py-4 rounded-full hover:bg-rose-500 active:scale-[0.97] transition-all duration-500 uppercase text-xs tracking-[0.2em] shadow-md"
             >
-              {isLoading ? "Verifying..." : "Enter Experience"}
+              {isLoading ? "Verifying..." : loginType === "driver" ? "Login as Driver" : "Enter Experience"}
             </button>
 
             <div className="w-full flex items-center gap-4 my-6">

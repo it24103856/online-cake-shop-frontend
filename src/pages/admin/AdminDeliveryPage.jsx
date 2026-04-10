@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { Truck, Loader2, Plus, Eye, X, Trash2 } from "lucide-react";
+import DriverSelect from "../../components/DriverSelect";
 
 export default function AdminDeliveryPage() {
     const [deliveries, setDeliveries] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [drivers, setDrivers] = useState([]); 
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [selectedDelivery, setSelectedDelivery] = useState(null);
@@ -14,9 +14,7 @@ export default function AdminDeliveryPage() {
 
     const [formData, setFormData] = useState({
         orderID: "",
-        driverID: "", 
-        driverPhone: "", // අලුතින් එක් කළා
-        vehicleNumber: "",
+        driverId: "",
         estimatedTime: ""
     });
 
@@ -25,14 +23,12 @@ export default function AdminDeliveryPage() {
 
     const loadData = async () => {
         try {
-            const [delRes, orderRes, driverRes] = await Promise.all([
+            const [delRes, orderRes] = await Promise.all([
                 axios.get(`${BASE_URL}/deliveries`, { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get(`${BASE_URL}/orders`, { headers: { Authorization: `Bearer ${token}` } }),
-                axios.get(`${BASE_URL}/users/drivers`, { headers: { Authorization: `Bearer ${token}` } }) 
+                axios.get(`${BASE_URL}/orders`, { headers: { Authorization: `Bearer ${token}` } })
             ]);
 
             setDeliveries(delRes.data?.data || []);
-            setDrivers(driverRes.data || []); 
             
             const alreadyAssignedIds = (delRes.data?.data || []).map(d => (d.orderID?._id || d.orderID || "").toString());
             const validOrders = (orderRes.data?.data || []).filter(o => !alreadyAssignedIds.includes(o._id.toString()));
@@ -73,29 +69,20 @@ export default function AdminDeliveryPage() {
     const handleAssign = async (e) => {
         e.preventDefault();
         
-        const selectedDriver = drivers.find(d => d._id === formData.driverID);
-        if (!selectedDriver) return toast.error("Please select a driver from the list");
-
-        // Phone number validation
-        const phoneRegex = /^[0-9]{10}$/;
-        if (!phoneRegex.test(formData.driverPhone)) {
-            return toast.error("Driver phone number must be exactly 10 digits (e.g. 0712345678)!");
+        if (!formData.orderID || !formData.driverId) {
+            return toast.error("Please select both an order and a driver");
         }
 
         setSubmitting(true);
         try {
             const payload = {
                 orderID: formData.orderID,
-                deliveryPerson: { 
-                    name: `${selectedDriver.firstName} ${selectedDriver.lastName}`, 
-                    phone: formData.driverPhone // Form එකේ ඇති phone එක යවයි
-                },
-                vehicleNumber: formData.vehicleNumber,
+                driverId: formData.driverId,
                 estimatedDeliveryTime: formData.estimatedTime
             };
             await axios.post(`${BASE_URL}/deliveries/assign`, payload, { headers: { Authorization: `Bearer ${token}` } });
             toast.success("Delivery assigned successfully!");
-            setFormData({ orderID: "", driverID: "", driverPhone: "", vehicleNumber: "", estimatedTime: "" });
+            setFormData({ orderID: "", driverId: "", estimatedTime: "" });
             loadData(); 
         } catch (error) { 
             toast.error(error.response?.data?.message || "Assignment failed"); 
@@ -131,27 +118,15 @@ export default function AdminDeliveryPage() {
                             {orders.map(o => <option key={o._id} value={o._id}>#{o._id.slice(-8).toUpperCase()}</option>)}
                         </select>
 
-                        <select required className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
-                            value={formData.driverID} 
-                            onChange={(e) => {
-                                const selected = drivers.find(d => d._id === e.target.value);
-                                setFormData({ ...formData, driverID: e.target.value, driverPhone: selected?.phone || "" });
-                            }}>
-                            <option value="">Select Available Driver</option>
-                            {drivers.map(d => (
-                                <option key={d._id} value={d._id}>
-                                    {d.firstName} {d.lastName} {d.phone ? `(${d.phone})` : "(No Phone)"}
-                                </option>
-                            ))}
-                        </select>
-
-                        <input required type="text" maxLength="10" placeholder="Driver Phone Number (10 digits)" className="w-full h-14 bg-neutral-100 text-neutral-500 cursor-not-allowed rounded-2xl border border-neutral-200 px-4 font-medium"
-                            value={formData.driverPhone} readOnly />
-
-                        <input required placeholder="Vehicle Plate No" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
-                            value={formData.vehicleNumber} onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value })} />
+                        <div className="bg-neutral-50 p-4 rounded-2xl border border-neutral-200">
+                            <DriverSelect
+                                selectedDriverId={formData.driverId}
+                                onDriverSelect={(driverId) => setFormData({ ...formData, driverId })}
+                            />
+                        </div>
                         
-                        <input required type="time" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
+                        <input type="datetime-local" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
+                            placeholder="Estimated Delivery Time"
                             value={formData.estimatedTime} onChange={(e) => setFormData({ ...formData, estimatedTime: e.target.value })} />
                         
                         <button type="submit" disabled={submitting} className="w-full h-14 bg-black text-white rounded-2xl font-black uppercase tracking-widest hover:bg-rose-600 transition-colors">

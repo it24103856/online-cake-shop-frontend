@@ -14,25 +14,21 @@ export default function DriverDashboard() {
     // 1. Auth & Role Validation Logic
     useEffect(() => {
         const token = localStorage.getItem('token');
+        const role = localStorage.getItem('role');
+        
         if (!token) {
             navigate('/login');
             return;
         }
 
-        axios.get(`${import.meta.env.VITE_BACKEND_URL}/users/`, {
-            headers: { Authorization: `Bearer ${token}` }
-        }).then((res) => {
-            if (res.data && res.data.role === "Driver") {
-                setIsLoading(false);
-                fetchTasks(); 
-            } else {
-                toast.error("Access Denied: Drivers only");
-                navigate("/");
-            }
-        }).catch(() => {
-            localStorage.clear();
+        // Check if user is driver
+        if (role === "driver") {
+            setIsLoading(false);
+            fetchTasks();
+        } else {
+            toast.error("Access Denied: Drivers only");
             navigate("/login");
-        });
+        }
     }, [navigate]);
 
     const fetchTasks = async () => {
@@ -40,9 +36,9 @@ export default function DriverDashboard() {
             const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/deliveries/my-tasks`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
             });
-            const myPhone = res.data.driverPhone;
-            const assignedTasks = res.data.data.filter(task => task.deliveryPerson?.phone === myPhone);
-            setTasks(assignedTasks);
+            if (res.data.success) {
+                setTasks(res.data.data);
+            }
         } catch (error) { 
             toast.error("Failed to load tasks"); 
         }
@@ -107,17 +103,31 @@ export default function DriverDashboard() {
                 {tasks.map(task => (
                     <div key={task._id} className="rounded-3xl border border-white bg-white p-5 shadow-sm">
                         <div className="flex justify-between items-start mb-4">
-                            <span className="text-xs font-black text-neutral-400 italic">#{task.orderID?._id.slice(-8).toUpperCase()}</span>
+                            <span className="text-xs font-black text-neutral-400 italic">#{task._id.slice(-8).toUpperCase()}</span>
                             <span className="bg-amber-100 px-2 py-1 text-[10px] font-bold text-amber-600 rounded-lg uppercase">{task.deliveryStatus}</span>
                         </div>
 
                         <div className="flex items-start gap-3 text-neutral-700 mb-6">
                             <MapPin size={18} className="text-rose-500 mt-1 shrink-0" />
-                            <div>
-                                <p className="text-sm font-bold w-full">Customer Details</p>
-                                <p className="text-xs text-gray-800 font-bold mt-1">{task.orderID?.customer?.name}</p>
-                                <p className="text-xs text-gray-500">{task.orderID?.customer?.phone || "No phone provided"}</p>
-                                <p className="text-xs text-gray-500 mt-1">{task.orderID?.customer?.address || "No address provided"}</p>
+                            <div className="w-full">
+                                <p className="text-sm font-bold mb-3">Delivery Details</p>
+                                
+                                <div className="space-y-2">
+                                    <div>
+                                        <p className="text-xs text-gray-500 font-semibold">Customer Name</p>
+                                        <p className="text-sm font-bold text-gray-800">{task.customerName}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <p className="text-xs text-gray-500 font-semibold">Phone</p>
+                                        <p className="text-sm font-bold text-gray-800">{task.customerPhone}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <p className="text-xs text-gray-500 font-semibold">Delivery Address</p>
+                                        <p className="text-sm font-bold text-gray-800">{task.customerAddress}</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
