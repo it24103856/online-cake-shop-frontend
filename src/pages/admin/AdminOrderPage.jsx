@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { 
-    Loader2, CheckCircle, Clock, Truck, 
-    ChevronRight, Trash2, AlertCircle, Filter 
+    Loader2, Trash2, AlertCircle, Filter 
 } from "lucide-react";
 
 export default function AdminOrderPage() {
@@ -11,8 +10,10 @@ export default function AdminOrderPage() {
     const [loading, setLoading] = useState(true);
     const [deleteModal, setDeleteModal] = useState({ show: false, id: null });
     const [updatingId, setUpdatingId] = useState(null);
+    const [cancellingId, setCancellingId] = useState(null);
 
-    const statusOptions = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    const statusOptions = ['pending', 'processing', 'shipped'];
+    const editableStatuses = new Set(statusOptions);
 
     useEffect(() => {
         fetchOrders();
@@ -47,6 +48,24 @@ export default function AdminOrderPage() {
             toast.error("Failed to update status");
         } finally {
             setUpdatingId(null);
+        }
+    };
+
+    const handleCancelOrder = async (orderId) => {
+        setCancellingId(orderId);
+        try {
+            const token = localStorage.getItem("token");
+            await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/orders/${orderId}/cancel`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            toast.success("Order cancelled successfully");
+            fetchOrders();
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to cancel order");
+        } finally {
+            setCancellingId(null);
         }
     };
 
@@ -114,35 +133,53 @@ export default function AdminOrderPage() {
                                     <td className="p-5 font-bold text-neutral-900">LKR.{order.totalPrice.toFixed(2)}</td>
                                     <td className="p-5">
                                         <div className="flex flex-col gap-1 items-start">
-                                            <select 
-                                                value={order.status}
-                                                disabled={updatingId === order._id || order.paymentStatus !== 'Paid'}
-                                                onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
-                                                className={`text-xs font-bold px-3 py-2 rounded-lg border-none outline-none cursor-pointer transition-all
-                                                    ${order.status === 'pending' ? 'bg-amber-50 text-amber-600' : ''}
-                                                    ${order.status === 'delivered' ? 'bg-emerald-50 text-emerald-600' : ''}
-                                                    ${order.status === 'cancelled' ? 'bg-rose-50 text-rose-600' : ''}
-                                                    ${order.status === 'processing' ? 'bg-blue-50 text-blue-600' : ''}
-                                                    ${order.status === 'shipped' ? 'bg-purple-50 text-purple-600' : ''}
-                                                    ${order.paymentStatus !== 'Paid' ? 'opacity-60 cursor-not-allowed' : ''}
-                                                `}
-                                            >
-                                                {statusOptions.map(opt => (
-                                                    <option key={opt} value={opt}>{opt.toUpperCase()}</option>
-                                                ))}
-                                            </select>
-                                            {order.paymentStatus !== 'Paid' && (
-                                                <span className="text-[10px] text-rose-500 italic font-semibold">Payment required to unlock</span>
+                                            {editableStatuses.has(order.status) ? (
+                                                <>
+                                                    <select 
+                                                        value={order.status}
+                                                        disabled={updatingId === order._id || order.paymentStatus !== 'Paid'}
+                                                        onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
+                                                        className={`text-xs font-bold px-3 py-2 rounded-lg border-none outline-none cursor-pointer transition-all
+                                                            ${order.status === 'pending' ? 'bg-amber-50 text-amber-600' : ''}
+                                                            ${order.status === 'processing' ? 'bg-blue-50 text-blue-600' : ''}
+                                                            ${order.status === 'shipped' ? 'bg-purple-50 text-purple-600' : ''}
+                                                            ${order.paymentStatus !== 'Paid' ? 'opacity-60 cursor-not-allowed' : ''}
+                                                        `}
+                                                    >
+                                                        {statusOptions.map(opt => (
+                                                            <option key={opt} value={opt}>{opt.toUpperCase()}</option>
+                                                        ))}
+                                                    </select>
+                                                    {order.paymentStatus !== 'Paid' && (
+                                                        <span className="text-[10px] text-rose-500 italic font-semibold">Payment required to unlock</span>
+                                                    )}
+                                                </>
+                                            ) : (
+                                                <span className={`text-[10px] font-bold px-3 py-2 rounded-lg uppercase tracking-widest ${order.status === 'cancelled' ? 'bg-rose-50 text-rose-600' : 'bg-emerald-50 text-emerald-600'}`}>
+                                                    {order.status}
+                                                </span>
                                             )}
                                         </div>
                                     </td>
                                     <td className="p-5 text-right">
-                                        <button 
-                                            onClick={() => confirmDelete(order._id)}
-                                            className="p-2 text-neutral-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
-                                        >
-                                            <Trash2 size={18} />
-                                        </button>
+                                        <div className="flex items-center justify-end gap-2">
+                                            <button 
+                                                onClick={() => handleCancelOrder(order._id)}
+                                                disabled={order.status === 'shipped' || order.status === 'delivered' || order.status === 'cancelled' || cancellingId === order._id}
+                                                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border ${order.status === 'shipped' || order.status === 'delivered' || order.status === 'cancelled'
+                                                    ? 'bg-neutral-100 text-neutral-300 border-neutral-200 cursor-not-allowed'
+                                                    : 'bg-rose-50 text-rose-600 border-rose-100 hover:bg-rose-600 hover:text-white'}
+                                                `}
+                                            >
+                                                {cancellingId === order._id ? 'Cancelling...' : 'Cancel Order'}
+                                            </button>
+                                            <button 
+                                                onClick={() => confirmDelete(order._id)}
+                                                className="p-2 text-neutral-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                                            >
+                                                <Trash2 size={18} />
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))}
@@ -154,7 +191,7 @@ export default function AdminOrderPage() {
             {/* Custom Delete Confirmation Modal */}
             {deleteModal.show && (
                 <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-6">
-                    <div className="bg-white rounded-[2rem] max-w-sm w-full p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
+                    <div className="bg-white rounded-3xl max-w-sm w-full p-8 shadow-2xl animate-in fade-in zoom-in duration-200">
                         <div className="w-16 h-16 bg-rose-50 rounded-full flex items-center justify-center mb-6 mx-auto">
                             <AlertCircle className="text-rose-500" size={32} />
                         </div>

@@ -19,6 +19,17 @@ export default function CakeDetailPage() {
         fetchCake();
     }, [id]);
 
+    useEffect(() => {
+        if (!cake) return;
+
+        if (cake.quantity <= 0) {
+            setQuantity(0);
+            return;
+        }
+
+        setQuantity((currentQuantity) => Math.min(Math.max(1, currentQuantity), cake.quantity));
+    }, [cake]);
+
     const fetchCake = async () => {
         setLoading(true);
         try {
@@ -40,14 +51,21 @@ export default function CakeDetailPage() {
     };
 
     const handleOrderNow = async () => {
+        if (!cake || cake.quantity <= 0 || quantity > cake.quantity) {
+            toast.error("Insufficient stock available.");
+            return;
+        }
+
         setAddingToCart(true);
         try {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
             const existingItem = cart.find(item => item._id === cake._id);
             if (existingItem) {
-                existingItem.quantity += quantity;
+                const stockQuantity = existingItem.stockQuantity ?? cake.quantity;
+                existingItem.stockQuantity = stockQuantity;
+                existingItem.quantity = Math.min(stockQuantity, existingItem.quantity + quantity);
             } else {
-                cart.push({ ...cake, quantity });
+                cart.push({ ...cake, quantity, stockQuantity: cake.quantity });
             }
             localStorage.setItem("cart", JSON.stringify(cart));
             toast.success(`${cake.name} added to cart!`);
@@ -151,14 +169,26 @@ export default function CakeDetailPage() {
                                 <button
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                     className="w-12 h-12 flex items-center justify-center hover:bg-neutral-50 disabled:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors text-xl font-light"
-                                    disabled={quantity <= 1}
+                                    disabled={quantity <= 1 || cake.quantity <= 0}
                                 >
                                     −
                                 </button>
-                                <span className="w-12 text-center font-bold text-lg">{quantity}</span>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max={cake.quantity}
+                                    value={quantity}
+                                    onChange={(e) => {
+                                        const nextQuantity = Number(e.target.value);
+                                        if (!Number.isFinite(nextQuantity)) return;
+                                        setQuantity(Math.min(cake.quantity, Math.max(1, nextQuantity)));
+                                    }}
+                                    disabled={cake.quantity <= 0}
+                                    className="w-16 text-center font-bold text-lg outline-none bg-transparent disabled:text-neutral-400"
+                                />
                                 <button
                                     onClick={() => setQuantity(Math.min(cake.quantity, quantity + 1))}
-                                    disabled={quantity >= cake.quantity}
+                                    disabled={quantity >= cake.quantity || cake.quantity <= 0}
                                     className="w-12 h-12 flex items-center justify-center hover:bg-neutral-50 disabled:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors text-xl font-light"
                                 >
                                     +
@@ -167,7 +197,7 @@ export default function CakeDetailPage() {
 
                             <button
                                 onClick={handleOrderNow}
-                                disabled={addingToCart || cake.quantity === 0}
+                                disabled={addingToCart || cake.quantity === 0 || quantity === 0}
                                 className="flex-1 py-4 bg-neutral-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-rose-500 transition-all shadow-xl shadow-neutral-200 disabled:bg-neutral-300"
                             >
                                 {addingToCart ? <Loader2 className="animate-spin" size={18} /> : <ShoppingCart size={18} />}

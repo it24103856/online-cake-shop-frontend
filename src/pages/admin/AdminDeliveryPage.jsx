@@ -20,6 +20,7 @@ export default function AdminDeliveryPage() {
 
     const token = localStorage.getItem("token");
     const BASE_URL = import.meta.env.VITE_BACKEND_URL;
+    const minDateTime = new Date().toISOString().slice(0, 16);
 
     const loadData = async () => {
         try {
@@ -28,10 +29,13 @@ export default function AdminDeliveryPage() {
                 axios.get(`${BASE_URL}/orders`, { headers: { Authorization: `Bearer ${token}` } })
             ]);
 
-            setDeliveries(delRes.data?.data || []);
+            const activeDeliveries = (delRes.data?.data || []).filter(item => item.orderID?.status !== "cancelled");
+            setDeliveries(activeDeliveries);
             
-            const alreadyAssignedIds = (delRes.data?.data || []).map(d => (d.orderID?._id || d.orderID || "").toString());
-            const validOrders = (orderRes.data?.data || []).filter(o => !alreadyAssignedIds.includes(o._id.toString()));
+            const alreadyAssignedIds = activeDeliveries.map(d => (d.orderID?._id || d.orderID || "").toString());
+            const validOrders = (orderRes.data?.data || [])
+                .filter(o => o.status === "shipped" && o.paymentStatus === "Paid")
+                .filter(o => !alreadyAssignedIds.includes(o._id.toString()));
             setOrders(validOrders);
         } catch (error) {
             toast.error("Failed to fetch data");
@@ -71,6 +75,14 @@ export default function AdminDeliveryPage() {
         
         if (!formData.orderID || !formData.driverId) {
             return toast.error("Please select both an order and a driver");
+        }
+
+        if (formData.estimatedTime) {
+            const selectedDate = new Date(formData.estimatedTime);
+            const now = new Date();
+            if (selectedDate < now) {
+                return toast.error("Estimated delivery date/time cannot be in the past.");
+            }
         }
 
         setSubmitting(true);
@@ -126,6 +138,7 @@ export default function AdminDeliveryPage() {
                         </div>
                         
                         <input type="datetime-local" className="w-full h-14 bg-neutral-50 rounded-2xl border border-neutral-200 px-4 font-medium"
+                            min={minDateTime}
                             placeholder="Estimated Delivery Time"
                             value={formData.estimatedTime} onChange={(e) => setFormData({ ...formData, estimatedTime: e.target.value })} />
                         
@@ -154,7 +167,8 @@ export default function AdminDeliveryPage() {
                                         <div className="text-[10px] text-neutral-400 font-medium">{item.deliveryPerson?.phone}</div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
+                                        <div className="flex flex-col items-start gap-2">
+                                            <div className="flex items-center gap-3">
                                             {item.image && (
                                                 <span className="relative flex h-3 w-3">
                                                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -165,13 +179,18 @@ export default function AdminDeliveryPage() {
                                             <select 
                                                 value={item.deliveryStatus} 
                                                 onChange={(e) => handleStatusUpdate(item._id, e.target.value)}
-                                                className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border-none ring-1 ring-inset focus:ring-2 focus:ring-black cursor-pointer appearance-none ${statusClasses[item.deliveryStatus] || statusClasses.Pending}`}
+                                                disabled={item.deliveryStatus === "Delivered"}
+                                                className={`px-3 py-1.5 rounded-xl text-[10px] font-black uppercase border-none ring-1 ring-inset focus:ring-2 focus:ring-black appearance-none ${item.deliveryStatus === "Delivered" ? "cursor-not-allowed opacity-70" : "cursor-pointer"} ${statusClasses[item.deliveryStatus] || statusClasses.Pending}`}
                                             >
                                                 <option value="Pending">Pending</option>
-                                                <option value="Out for Delivery">Out for Delivery</option>
                                                 <option value="Delivered">Delivered</option>
-                                                <option value="Cancelled">Cancelled</option>
                                             </select>
+                                            </div>
+                                            {item.orderID?.isReceivedByCustomer && (
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                                                    Customer Received
+                                                </span>
+                                            )}
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 flex justify-end gap-2">
@@ -221,6 +240,13 @@ export default function AdminDeliveryPage() {
                                     {selectedDelivery.deliveryStatus}
                                 </span>
                             </div>
+
+                            {selectedDelivery.orderID?.isReceivedByCustomer && (
+                                <div className="mb-4 inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-widest">
+                                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                                    Customer Received
+                                </div>
+                            )}
                             
                             <div className="grid grid-cols-2 gap-8 my-6 bg-neutral-50 p-6 rounded-3xl border border-neutral-100">
                                 <div>
@@ -240,7 +266,7 @@ export default function AdminDeliveryPage() {
                                 {selectedDelivery.deliveryStatus !== "Delivered" && selectedDelivery.image && (
                                     <button 
                                         onClick={() => { handleStatusUpdate(selectedDelivery._id, "Delivered"); setIsModalOpen(false); }} 
-                                        className="flex-[2] h-14 bg-emerald-500 text-white rounded-2xl font-black uppercase shadow-lg shadow-emerald-200 hover:bg-emerald-600 transition-all"
+                                        className="flex-2 h-14 bg-emerald-500 text-white rounded-2xl font-black uppercase shadow-lg shadow-emerald-200 hover:bg-emerald-600 transition-all"
                                     >
                                         Approve & Mark Delivered
                                     </button>

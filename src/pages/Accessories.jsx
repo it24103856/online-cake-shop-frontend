@@ -72,7 +72,7 @@ export default function AccessoriesPage() {
                                     {/* Image Container */}
                                     <Link 
                                         to={`/accessory/${item._id}`}
-                                        className="relative aspect-[4/5] overflow-hidden rounded-[2rem] bg-neutral-100 shadow-sm group-hover:shadow-2xl transition-all duration-500"
+                                        className="relative aspect-4/5 overflow-hidden rounded-4xl bg-neutral-100 shadow-sm group-hover:shadow-2xl transition-all duration-500"
                                     >
                                         <img
                                             src={item.image?.[0] || item.Image?.[0] || "https://via.placeholder.com/600"}
@@ -81,7 +81,7 @@ export default function AccessoriesPage() {
                                         />
                                         
                                         {/* Overlay Gradient */}
-                                        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                        <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
                                         {/* Badges */}
                                         <div className="absolute top-6 left-6 flex flex-col gap-2">
@@ -90,17 +90,16 @@ export default function AccessoriesPage() {
                                                     Out of Stock
                                                 </span>
                                             )}
-                                            {item.quantity < 10 && item.quantity > 0 && (
-                                                <span className="bg-rose-500 text-white text-[10px] font-bold px-3 py-1.5 rounded-full uppercase tracking-widest animate-pulse">
-                                                    Limited Stock: {item.quantity}
-                                                </span>
-                                            )}
                                         </div>
 
                                         {/* Quick View Button */}
                                         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 translate-y-10 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 w-[80%]">
-                                            <button className="w-full py-3.5 bg-white text-neutral-900 rounded-2xl font-bold text-sm shadow-xl flex items-center justify-center gap-2 hover:bg-rose-500 hover:text-white transition-colors">
-                                                View Accessory <ArrowRight size={16} />
+                                            <button
+                                                type="button"
+                                                disabled={item.quantity <= 0}
+                                                className="w-full py-3.5 bg-white text-neutral-900 rounded-2xl font-bold text-sm shadow-xl flex items-center justify-center gap-2 hover:bg-rose-500 hover:text-white transition-colors disabled:bg-neutral-200 disabled:text-neutral-500 disabled:cursor-not-allowed disabled:hover:bg-neutral-200 disabled:hover:text-neutral-500"
+                                            >
+                                                {item.quantity <= 0 ? "Out of Stock" : "View Accessory"} <ArrowRight size={16} />
                                             </button>
                                         </div>
                                     </Link>

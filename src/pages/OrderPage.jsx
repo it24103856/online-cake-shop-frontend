@@ -71,11 +71,38 @@ export default function OrderPage() {
         }
     };
 
+    useEffect(() => {
+        if (allItems.length === 0 || cart.length === 0) return;
+
+        const syncedCart = cart.map((item) => {
+            const matchedItem = allItems.find(product => product._id === item._id);
+            const stockQuantity = item.stockQuantity ?? matchedItem?.quantity ?? item.quantity;
+            const quantity = Math.min(stockQuantity, Math.max(1, item.quantity));
+
+            return {
+                ...item,
+                stockQuantity,
+                quantity
+            };
+        });
+
+        const hasChanges = syncedCart.some((item, index) => {
+            const currentItem = cart[index];
+            return currentItem.quantity !== item.quantity || currentItem.stockQuantity !== item.stockQuantity;
+        });
+
+        if (hasChanges) {
+            setCart(syncedCart);
+            localStorage.setItem("cart", JSON.stringify(syncedCart));
+        }
+    }, [allItems, cart]);
+
     const updateQuantity = (id, delta) => {
         const updatedCart = cart.map(item => {
             if (item._id === id) {
-                const newQty = Math.max(1, item.quantity + delta);
-                return { ...item, quantity: newQty };
+                const stockQuantity = item.stockQuantity ?? item.quantity;
+                const newQty = Math.min(stockQuantity, Math.max(1, item.quantity + delta));
+                return { ...item, stockQuantity, quantity: newQty };
             }
             return item;
         });
@@ -91,12 +118,19 @@ export default function OrderPage() {
     };
 
     const addToCartFromSearch = (item) => {
+        const stockQuantity = item.quantity;
+
+        if (stockQuantity <= 0) {
+            toast.error("Insufficient stock available.");
+            return;
+        }
+
         const existing = cart.find(c => c._id === item._id);
         let newCart;
         if (existing) {
-            newCart = cart.map(c => c._id === item._id ? { ...c, quantity: c.quantity + 1 } : c);
+            newCart = cart.map(c => c._id === item._id ? { ...c, stockQuantity: c.stockQuantity ?? stockQuantity, quantity: Math.min(c.stockQuantity ?? stockQuantity, c.quantity + 1) } : c);
         } else {
-            const itemWithType = { ...item, type: item.type || 'Cake', quantity: 1 };
+            const itemWithType = { ...item, type: item.type || 'Cake', quantity: 1, stockQuantity };
             newCart = [...cart, itemWithType];
         }
         setCart(newCart);
@@ -119,6 +153,16 @@ export default function OrderPage() {
     // --- Main change is here ---
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const hasInvalidQuantity = cart.some(item => {
+            const stockQuantity = item.stockQuantity ?? item.quantity;
+            return item.quantity > stockQuantity;
+        });
+
+        if (hasInvalidQuantity) {
+            toast.error("Insufficient stock available.");
+            return;
+        }
 
         // Phone number validation: Only digits and exactly 10 digits
         const phoneRegex = /^[0-9]{10}$/;
@@ -286,10 +330,10 @@ export default function OrderPage() {
                             </button>
                         </div>
                         
-                        <div className="space-y-6 mb-8 max-h-[450px] overflow-y-auto pr-2 custom-scrollbar">
+                        <div className="space-y-6 mb-8 max-h-112.5 overflow-y-auto pr-2 custom-scrollbar">
                             {cart.map((item) => (
                                 <div key={item._id} className="flex items-center gap-4 group">
-                                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-neutral-100 flex-shrink-0 border border-neutral-100">
+                                    <div className="w-20 h-20 rounded-2xl overflow-hidden bg-neutral-100 shrink-0 border border-neutral-100">
                                         <img src={item.Image?.[0] || item.image?.[0]} className="w-full h-full object-cover" alt={item.name} />
                                     </div>
                                     <div className="flex-1">
@@ -297,9 +341,40 @@ export default function OrderPage() {
                                         <p className="text-[10px] font-bold text-rose-400 uppercase tracking-widest mt-0.5">{item.type === 'Accessories' ? 'Accessory' : 'Cake'}</p>
                                         <div className="flex items-center gap-3 mt-2">
                                             <div className="flex items-center bg-neutral-50 rounded-lg p-1">
-                                                <button onClick={() => updateQuantity(item._id, -1)} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-md text-neutral-400"><Minus size={12} /></button>
-                                                <span className="w-8 text-center text-xs font-bold">{item.quantity}</span>
-                                                <button onClick={() => updateQuantity(item._id, 1)} className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-md text-neutral-400"><Plus size={12} /></button>
+                                                <button
+                                                    onClick={() => updateQuantity(item._id, -1)}
+                                                    className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-md text-neutral-400"
+                                                    disabled={item.quantity <= 1}
+                                                >
+                                                    <Minus size={12} />
+                                                </button>
+                                                <input
+                                                    type="number"
+                                                    min="1"
+                                                    max={item.stockQuantity ?? item.quantity}
+                                                    value={item.quantity}
+                                                    onChange={(e) => {
+                                                        const nextValue = Number(e.target.value);
+                                                        if (!Number.isFinite(nextValue)) return;
+                                                        const stockQuantity = item.stockQuantity ?? item.quantity;
+                                                        const safeValue = Math.min(stockQuantity, Math.max(1, nextValue));
+                                                        const updatedCart = cart.map(cartItem => 
+                                                            cartItem._id === item._id
+                                                                ? { ...cartItem, quantity: safeValue, stockQuantity }
+                                                                : cartItem
+                                                        );
+                                                        setCart(updatedCart);
+                                                        localStorage.setItem("cart", JSON.stringify(updatedCart));
+                                                    }}
+                                                    className="w-10 text-center text-xs font-bold bg-transparent outline-none"
+                                                />
+                                                <button
+                                                    onClick={() => updateQuantity(item._id, 1)}
+                                                    className="w-6 h-6 flex items-center justify-center hover:bg-white rounded-md text-neutral-400"
+                                                    disabled={item.quantity >= (item.stockQuantity ?? item.quantity)}
+                                                >
+                                                    <Plus size={12} />
+                                                </button>
                                             </div>
                                             <button onClick={() => removeItem(item._id)} className="text-neutral-300 hover:text-rose-500 transition-colors p-1"><Trash2 size={16} /></button>
                                         </div>
@@ -334,7 +409,7 @@ export default function OrderPage() {
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300" size={18} />
                                 <input type="text" placeholder="Search cakes..." className="w-full pl-12 pr-4 py-4 bg-neutral-50 rounded-2xl outline-none" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
                             </div>
-                            <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            <div className="space-y-3 max-h-100 overflow-y-auto pr-2 custom-scrollbar">
                                 {filteredSearch.map(item => (
                                     <div key={item._id} className="flex items-center justify-between p-3 hover:bg-neutral-50 rounded-2xl transition-all">
                                         <div className="flex items-center gap-4">
@@ -342,9 +417,20 @@ export default function OrderPage() {
                                             <div>
                                                 <p className="font-bold text-sm text-neutral-800">{item.name}</p>
                                                 <p className="text-[10px] text-neutral-400 font-bold">LKR.{item.price}</p>
+                                                {item.quantity <= 0 && (
+                                                    <p className="text-[10px] font-bold uppercase tracking-widest text-rose-500">
+                                                        Out of Stock
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
-                                        <button onClick={() => addToCartFromSearch(item)} className="p-2 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all"><Plus size={18} /></button>
+                                        <button
+                                            onClick={() => addToCartFromSearch(item)}
+                                            disabled={item.quantity <= 0}
+                                            className="p-2 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all disabled:bg-neutral-200 disabled:text-neutral-400 disabled:cursor-not-allowed disabled:hover:bg-neutral-200 disabled:hover:text-neutral-400"
+                                        >
+                                            <Plus size={18} />
+                                        </button>
                                     </div>
                                 ))}
                             </div>

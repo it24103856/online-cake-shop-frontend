@@ -32,6 +32,33 @@ export default function CustomerTrackByEmail() {
         fetchAllDeliveries();
     }, [token, BASE_URL]);
 
+    const handleOrderReceived = async (orderId) => {
+        try {
+            const res = await axios.patch(
+                `${BASE_URL}/deliveries/order-received/${orderId}`,
+                {},
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (res.data.success) {
+                toast.success("Order marked as received!");
+                setDeliveries((prev) => prev.map((delivery) => {
+                    if (delivery.orderID?._id !== orderId) return delivery;
+                    return {
+                        ...delivery,
+                        orderID: {
+                            ...delivery.orderID,
+                            isReceivedByCustomer: true,
+                            receivedAt: res.data?.data?.receivedAt || new Date().toISOString()
+                        }
+                    };
+                }));
+            }
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Failed to confirm order receipt.");
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen grid place-items-center bg-white">
@@ -105,8 +132,8 @@ export default function CustomerTrackByEmail() {
                                         <div className="mb-10 px-2">
                                             <div className="flex justify-between items-center relative">
                                                 {/* Connecting Line */}
-                                                <div className={`absolute left-0 right-0 h-[2px] top-1/2 -translate-y-1/2 bg-white/10`} />
-                                                <div className={`absolute left-0 h-[2px] top-1/2 -translate-y-1/2 bg-rose-500 transition-all duration-1000`} style={{ width: item.deliveryStatus === 'Delivered' ? '100%' : '50%' }} />
+                                                <div className={`absolute left-0 right-0 h-0.5 top-1/2 -translate-y-1/2 bg-white/10`} />
+                                                <div className={`absolute left-0 h-0.5 top-1/2 -translate-y-1/2 bg-rose-500 transition-all duration-1000`} style={{ width: item.deliveryStatus === 'Delivered' ? '100%' : '50%' }} />
 
                                                 {/* Status Points */}
                                                 {['Order Placed', 'On the Way', 'Delivered'].map((step, idx) => (
@@ -152,17 +179,16 @@ export default function CustomerTrackByEmail() {
                                         {(item.deliveryStatus === 'Delivered' || item.deliveryStatus === 'DELIVERED' || item.deliveryStatus === 'delivered') && (
                                             <div className="flex gap-3 mt-6 pt-6 border-t border-dashed border-white/10">
                                                 <button
-                                                    onClick={() => {
-                                                        toast.success("Order marked as received!");
-                                                    }}
-                                                    className="flex-1 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl uppercase text-[10px] tracking-widest"
+                                                    onClick={() => handleOrderReceived(item.orderID?._id)}
+                                                    disabled={item.orderID?.isReceivedByCustomer}
+                                                    className="flex-1 bg-linear-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl uppercase text-[10px] tracking-widest disabled:from-neutral-500 disabled:to-neutral-600 disabled:cursor-not-allowed"
                                                 >
                                                     <CheckCircle size={16} />
-                                                    Complete
+                                                    {item.orderID?.isReceivedByCustomer ? "Received" : "Complete"}
                                                 </button>
                                                 <Link
                                                     to="/reviews"
-                                                    className="flex-1 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl uppercase text-[10px] tracking-widest"
+                                                    className="flex-1 bg-linear-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-black py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl uppercase text-[10px] tracking-widest"
                                                 >
                                                     <MessageSquare size={16} />
                                                     Review

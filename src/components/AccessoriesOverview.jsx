@@ -39,15 +39,33 @@ export default function AccessoryDetailPage() {
         fetchAccessory();
     }, [id, navigate]);
 
+    useEffect(() => {
+        if (!accessory) return;
+
+        if (accessory.quantity <= 0) {
+            setQuantity(0);
+            return;
+        }
+
+        setQuantity((currentQuantity) => Math.min(Math.max(1, currentQuantity), accessory.quantity));
+    }, [accessory]);
+
     const handleAddToCart = async () => {
+        if (!accessory || accessory.quantity <= 0 || quantity > accessory.quantity) {
+            toast.error("Insufficient stock available.");
+            return;
+        }
+
         setAddingToCart(true);
         try {
             let cart = JSON.parse(localStorage.getItem("cart")) || [];
             const existingItem = cart.find(item => item._id === accessory._id);
             if (existingItem) {
-                existingItem.quantity += quantity;
+                const stockQuantity = existingItem.stockQuantity ?? accessory.quantity;
+                existingItem.stockQuantity = stockQuantity;
+                existingItem.quantity = Math.min(stockQuantity, existingItem.quantity + quantity);
             } else {
-                cart.push({ ...accessory, quantity, type: 'accessory' });
+                cart.push({ ...accessory, quantity, stockQuantity: accessory.quantity, type: 'accessory' });
             }
             localStorage.setItem("cart", JSON.stringify(cart));
             toast.success(`${accessory.name} added to cart!`);
@@ -131,14 +149,26 @@ export default function AccessoryDetailPage() {
                                 <button
                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                     className="w-12 h-12 flex items-center justify-center hover:bg-neutral-50 disabled:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors text-xl font-light"
-                                    disabled={quantity <= 1}
+                                    disabled={quantity <= 1 || accessory.quantity <= 0}
                                 >
                                     −
                                 </button>
-                                <span className="w-12 text-center font-bold text-lg">{quantity}</span>
+                                <input
+                                    type="number"
+                                    min="1"
+                                    max={accessory.quantity}
+                                    value={quantity}
+                                    onChange={(e) => {
+                                        const nextQuantity = Number(e.target.value);
+                                        if (!Number.isFinite(nextQuantity)) return;
+                                        setQuantity(Math.min(accessory.quantity, Math.max(1, nextQuantity)));
+                                    }}
+                                    disabled={accessory.quantity <= 0}
+                                    className="w-16 text-center font-bold text-lg outline-none bg-transparent disabled:text-neutral-400"
+                                />
                                 <button
                                     onClick={() => setQuantity(Math.min(accessory.quantity, quantity + 1))}
-                                    disabled={quantity >= accessory.quantity}
+                                    disabled={quantity >= accessory.quantity || accessory.quantity <= 0}
                                     className="w-12 h-12 flex items-center justify-center hover:bg-neutral-50 disabled:hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed rounded-xl transition-colors text-xl font-light"
                                 >
                                     +
@@ -147,7 +177,7 @@ export default function AccessoryDetailPage() {
 
                             <button
                                 onClick={handleAddToCart}
-                                disabled={addingToCart || accessory.quantity === 0}
+                                disabled={addingToCart || accessory.quantity === 0 || quantity === 0}
                                 className="flex-1 py-4 bg-neutral-900 text-white rounded-2xl font-bold uppercase tracking-widest text-xs flex items-center justify-center gap-3 hover:bg-rose-500 transition-all shadow-xl shadow-neutral-200 disabled:bg-neutral-300"
                             >
                                 {addingToCart ? <Loader2 className="animate-spin" size={18} /> : <ShoppingCart size={18} />}
