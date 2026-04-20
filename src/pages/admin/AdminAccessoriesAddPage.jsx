@@ -20,6 +20,22 @@ export default function AdminAcessoriesAddpage() {
     // Enum values from schema
     const categories = ['Candles', 'Toppers', 'Cards', 'Balloons', 'Other'];
 
+    const handlePriceChange = (e) => {
+        const value = e.target.value;
+        const cleaned = value.replace(/[^\d.]/g, '');
+        const [integerPart, ...decimalParts] = cleaned.split('.');
+        const decimalPart = decimalParts.join('').slice(0, 2);
+        const nextValue = decimalParts.length > 0 ? `${integerPart}.${decimalPart}` : integerPart;
+
+        setFormData({ ...formData, price: nextValue });
+    };
+
+    const handleQuantityChange = (e) => {
+        const value = e.target.value;
+        const cleaned = value.replace(/\D/g, '');
+        setFormData({ ...formData, quantity: cleaned });
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -38,6 +54,17 @@ export default function AdminAcessoriesAddpage() {
         if (!imageFile) return toast.error('Please upload an image.');
         if (!formData.category) return toast.error('Please select a category.');
 
+        const parsedPrice = Number(formData.price);
+        const parsedQuantity = Number(formData.quantity);
+
+        if (!formData.price || Number.isNaN(parsedPrice) || parsedPrice < 0) {
+            return toast.error('Price must be 0 or greater.');
+        }
+
+        if (!formData.quantity || !Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+            return toast.error('Quantity must be a whole number 0 or greater.');
+        }
+
         setIsLoading(true);
         const toastId = toast.loading('Adding new accessory...');
 
@@ -46,8 +73,8 @@ export default function AdminAcessoriesAddpage() {
             
             const payload = {
                 ...formData,
-                price: parseFloat(formData.price),
-                quantity: parseInt(formData.quantity),
+                price: parsedPrice,
+                quantity: parsedQuantity,
                 image: [imageUrl], // Corrected to 'image' (not 'Image') per schema
             };
 
@@ -96,8 +123,8 @@ export default function AdminAcessoriesAddpage() {
                     ))}
                 </select>
 
-                <input name="price" type="number" placeholder="Price ($)" onChange={handleChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-rose-200 outline-none" required />
-                <input name="quantity" type="number" placeholder="Stock Quantity" onChange={handleChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-rose-200 outline-none" required />
+                <input name="price" type="text" inputMode="decimal" value={formData.price} placeholder="Price (LKR)" onChange={handlePriceChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-rose-200 outline-none" required />
+                <input name="quantity" type="text" inputMode="numeric" value={formData.quantity} placeholder="Stock Quantity" onChange={handleQuantityChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-rose-200 outline-none" required />
                 
                 <textarea name="description" placeholder="Short Description..." onChange={handleChange} className="p-3 border rounded-lg md:col-span-2 outline-none h-24" required />
 

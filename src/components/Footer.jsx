@@ -26,6 +26,8 @@ export default function Footer() {
               { to: "/cakes", label: "Cakes" },
               { to: "/about", label: "About Us" },
               { to: "/contact", label: "Contact" },
+              { to: "/feedback", label: "Feedback" },
+              { to: "/terms", label: "Terms & Conditions" },
             ].map((link) => (
               <li key={link.to}>
                 <Link to={link.to} className="hover:text-[#00AEEF] transition-all duration-500">

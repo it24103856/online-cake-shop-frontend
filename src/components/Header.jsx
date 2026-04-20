@@ -20,6 +20,7 @@ export default function Header() {
     { to: "/about", label: "About" },
     { to: "/contact", label: "Contact" },
     { to: "/feedback", label: "Feedback" },
+    { to: "/terms", label: "Terms & Conditions" },
   ];
 
   return (

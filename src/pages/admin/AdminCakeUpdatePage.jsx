@@ -15,6 +15,28 @@ export default function AdminCakeUpdatePage() {
     const [imageFile, setImageFile] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const handlePriceChange = (e) => {
+        const value = e.target.value;
+        const cleaned = value.replace(/[^\d.]/g, '');
+        const [integerPart, ...decimalParts] = cleaned.split('.');
+        const decimalPart = decimalParts.join('').slice(0, 2);
+        const nextValue = decimalParts.length > 0 ? `${integerPart}.${decimalPart}` : integerPart;
+
+        setFormData({ ...formData, price: nextValue });
+    };
+
+    const handleQuantityChange = (e) => {
+        const value = e.target.value;
+        const cleaned = value.replace(/\D/g, '');
+        setFormData({ ...formData, quantity: cleaned });
+    };
+
+    const handleWeightChange = (e) => {
+        const value = e.target.value;
+        const cleaned = value.replace(/-/g, '');
+        setFormData({ ...formData, weight: cleaned });
+    };
+
     useEffect(() => {
         const fetchCake = async () => {
             try {
@@ -55,6 +77,23 @@ export default function AdminCakeUpdatePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const parsedPrice = Number(formData.price);
+        const parsedQuantity = Number(formData.quantity);
+        const parsedWeight = parseFloat(formData.weight);
+
+        if (!formData.price || Number.isNaN(parsedPrice) || parsedPrice < 0) {
+            return toast.error('Price must be 0 or greater.');
+        }
+
+        if (!formData.quantity || !Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+            return toast.error('Quantity must be a whole number 0 or greater.');
+        }
+
+        if (!formData.weight || formData.weight.includes('-') || Number.isNaN(parsedWeight) || parsedWeight <= 0) {
+            return toast.error('Weight must be a positive value (no minus).');
+        }
+
         setIsLoading(true);
         const toastId = toast.loading('Updating...');
 
@@ -66,8 +105,8 @@ export default function AdminCakeUpdatePage() {
 
             const updatedPayload = {
                 ...formData,
-                price: parseFloat(formData.price),
-                quantity: parseInt(formData.quantity),
+                price: parsedPrice,
+                quantity: parsedQuantity,
                 Image: [finalImageUrl]
             };
 
@@ -99,8 +138,8 @@ export default function AdminCakeUpdatePage() {
                 <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 ml-1">Tagline</label>
                 <input name="altName" value={formData.altName} onChange={handleChange} className="p-3 border rounded-lg" required /></div>
 
-                <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 ml-1">Price ($)</label>
-                <input name="price" type="number" value={formData.price} onChange={handleChange} className="p-3 border rounded-lg" required /></div>
+                <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 ml-1">Price (LKR)</label>
+                <input name="price" type="text" inputMode="decimal" value={formData.price} onChange={handlePriceChange} className="p-3 border rounded-lg" required /></div>
 
                 <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 ml-1">Category</label>
                 <select name="category" value={formData.category} onChange={handleChange} className="p-3 border rounded-lg">
@@ -111,10 +150,10 @@ export default function AdminCakeUpdatePage() {
                 <input name="flavor" value={formData.flavor} onChange={handleChange} className="p-3 border rounded-lg" required /></div>
 
                 <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 ml-1">Weight</label>
-                <input name="weight" value={formData.weight} onChange={handleChange} className="p-3 border rounded-lg" required /></div>
+                <input name="weight" value={formData.weight} onChange={handleWeightChange} className="p-3 border rounded-lg" required /></div>
 
                 <div className="flex flex-col md:col-span-2"><label className="text-xs font-bold text-gray-500 ml-1">Stock Quantity</label>
-                <input name="quantity" type="number" value={formData.quantity} onChange={handleChange} className="p-3 border rounded-lg" required /></div>
+                <input name="quantity" type="text" inputMode="numeric" value={formData.quantity} onChange={handleQuantityChange} className="p-3 border rounded-lg" required /></div>
 
                 <textarea name="description" value={formData.description} onChange={handleChange} className="p-3 border rounded-lg md:col-span-2 h-24" required />
 

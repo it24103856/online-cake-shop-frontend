@@ -23,6 +23,22 @@ export default function AdminAccessoriesUpdatePage() {
 
     const categories = ['Candles', 'Toppers', 'Cards', 'Balloons', 'Other'];
 
+    const handlePriceChange = (e) => {
+        const value = e.target.value;
+        const cleaned = value.replace(/[^\d.]/g, '');
+        const [integerPart, ...decimalParts] = cleaned.split('.');
+        const decimalPart = decimalParts.join('').slice(0, 2);
+        const nextValue = decimalParts.length > 0 ? `${integerPart}.${decimalPart}` : integerPart;
+
+        setFormData({ ...formData, price: nextValue });
+    };
+
+    const handleQuantityChange = (e) => {
+        const value = e.target.value;
+        const cleaned = value.replace(/\D/g, '');
+        setFormData({ ...formData, quantity: cleaned });
+    };
+
     useEffect(() => {
         const fetchAccessory = async () => {
             setIsFetching(true);
@@ -67,6 +83,18 @@ export default function AdminAccessoriesUpdatePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        const parsedPrice = Number(formData.price);
+        const parsedQuantity = Number(formData.quantity);
+
+        if (!formData.price || Number.isNaN(parsedPrice) || parsedPrice < 0) {
+            return toast.error('Price must be 0 or greater.');
+        }
+
+        if (!formData.quantity || !Number.isInteger(parsedQuantity) || parsedQuantity < 0) {
+            return toast.error('Quantity must be a whole number 0 or greater.');
+        }
+
         setIsLoading(true);
         const toastId = toast.loading('Updating accessory...');
 
@@ -80,8 +108,8 @@ export default function AdminAccessoriesUpdatePage() {
 
             const updatedPayload = {
                 ...formData,
-                price: parseFloat(formData.price),
-                quantity: parseInt(formData.quantity),
+                price: parsedPrice,
+                quantity: parsedQuantity,
                 image: [finalImageUrl] 
             };
 
@@ -154,14 +182,14 @@ export default function AdminAccessoriesUpdatePage() {
 
                 {/* Price */}
                 <div className="flex flex-col space-y-1">
-                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 ml-1">Price ($)</label>
-                    <input name="price" type="number" step="0.01" value={formData.price} onChange={handleChange} className="p-4 bg-neutral-50 border-none rounded-2xl focus:ring-2 focus:ring-rose-100 outline-none text-neutral-800 font-medium" required />
+                    <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 ml-1">Price (LKR)</label>
+                    <input name="price" type="text" inputMode="decimal" value={formData.price} onChange={handlePriceChange} className="p-4 bg-neutral-50 border-none rounded-2xl focus:ring-2 focus:ring-rose-100 outline-none text-neutral-800 font-medium" required />
                 </div>
 
                 {/* Quantity */}
                 <div className="flex flex-col space-y-1">
                     <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-400 ml-1">Stock Quantity</label>
-                    <input name="quantity" type="number" value={formData.quantity} onChange={handleChange} className="p-4 bg-neutral-50 border-none rounded-2xl focus:ring-2 focus:ring-rose-100 outline-none text-neutral-800 font-medium" required />
+                    <input name="quantity" type="text" inputMode="numeric" value={formData.quantity} onChange={handleQuantityChange} className="p-4 bg-neutral-50 border-none rounded-2xl focus:ring-2 focus:ring-rose-100 outline-none text-neutral-800 font-medium" required />
                 </div>
 
                 {/* Description */}

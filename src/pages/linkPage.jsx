@@ -18,6 +18,7 @@ import FeedbackForm from "./Feedback";
 import DriverDashboard from "./DriverDashboard"
 import CustomerTrack from "../components/CustomerTrack";
 import ReviewPage from "./ReviewPage";
+import Termandcondition from "./Termandcondition";
 
 
 export default function LinkPage() {
@@ -43,6 +44,7 @@ export default function LinkPage() {
                     <Route path="/driver" element={<DriverDashboard/>}/>
                     <Route path="/my-delivery/:userId" element={<CustomerTrack />} />
                     <Route path="/reviews" element={<ReviewPage />} />
+                    <Route path="/terms" element={<Termandcondition />} />  
 
                 </Routes>
             </main>
