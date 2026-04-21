@@ -5,6 +5,15 @@ import {
     Loader2, Trash2, AlertCircle, Filter 
 } from "lucide-react";
 
+const formatYYYYMMDD = (value) => {
+    if (!value) return "Not selected";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Not selected";
+
+    return date.toLocaleDateString("en-CA", { timeZone: "UTC" });
+};
+
 export default function AdminOrderPage() {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -114,6 +123,7 @@ export default function AdminOrderPage() {
                             <tr className="bg-neutral-50/50 border-b border-neutral-100">
                                 <th className="p-5 text-xs font-bold uppercase tracking-widest text-neutral-400">Order Details</th>
                                 <th className="p-5 text-xs font-bold uppercase tracking-widest text-neutral-400">Customer</th>
+                                <th className="p-5 text-xs font-bold uppercase tracking-widest text-neutral-400">Delivery Date</th>
                                 <th className="p-5 text-xs font-bold uppercase tracking-widest text-neutral-400">Total</th>
                                 <th className="p-5 text-xs font-bold uppercase tracking-widest text-neutral-400">Status</th>
                                 <th className="p-5 text-xs font-bold uppercase tracking-widest text-neutral-400 text-right">Actions</th>
@@ -129,6 +139,9 @@ export default function AdminOrderPage() {
                                     <td className="p-5">
                                         <p className="font-medium text-sm text-neutral-800">{order.customer.name}</p>
                                         <p className="text-xs text-neutral-400">{order.customer.phone}</p>
+                                    </td>
+                                    <td className="p-5 text-sm text-neutral-700 font-medium">
+                                        {formatYYYYMMDD(order.deliveryDate)}
                                     </td>
                                     <td className="p-5 font-bold text-neutral-900">LKR.{order.totalPrice.toFixed(2)}</td>
                                     <td className="p-5">

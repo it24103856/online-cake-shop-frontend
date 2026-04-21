@@ -5,6 +5,9 @@ import {
     LayoutDashboard, ShieldCheck, Home, LogOut, Cake, ShoppingBag, Users, CreditCard, Puzzle, Settings, Bell, Truck
 } from "lucide-react";
 
+// Components
+import DownloadReportButton from "../components/DownloadReportButton";
+
 // Pages - All using PascalCase for consistency
 import AdminCakePage from "./admin/AdminCakePage";
 import AdminCakeAddPage from "./admin/AdminCakeAddPage";
@@ -90,7 +93,7 @@ export default function AdminPage() {
                     
                     {/* Brand Section */}
                     <div className="flex items-center gap-4 shrink-0">
-                        <div className="w-12 h-12 bg-gradient-to-br from-gray-800 to-black rounded-2xl flex items-center justify-center text-white shadow-lg shadow-gray-200 rotate-3">
+                        <div className="w-12 h-12 bg-linear-to-br from-gray-800 to-black rounded-2xl flex items-center justify-center text-white shadow-lg shadow-gray-200 rotate-3">
                             <ShieldCheck size={24} />
                         </div>
                         <div className="hidden xl:block">
@@ -101,7 +104,7 @@ export default function AdminPage() {
 
                     {/* Links Section - Center */}
                     <div className="flex-1 flex justify-center px-8">
-                        <div className="flex items-center gap-2 bg-gray-100/50 p-1.5 rounded-[2rem] border border-gray-100 overflow-x-auto no-scrollbar max-w-full">
+                        <div className="flex items-center gap-2 bg-gray-100/50 p-1.5 rounded-4xl border border-gray-100 overflow-x-auto no-scrollbar max-w-full">
                             <TopNavLink to="/admin" icon={<LayoutDashboard />} label="Overview" />
                             <TopNavLink to="/admin/users" icon={<Users />} label="Users" />
                             <TopNavLink to="/admin/cakes" icon={<Cake />} label="Cakes" />
@@ -139,7 +142,7 @@ export default function AdminPage() {
             {/* Content Area */}
             <div className="flex-1 flex flex-col h-full overflow-hidden pt-24">
                 <main className="flex-1 overflow-y-auto p-8 lg:p-16 custom-scrollbar">
-                    <div className="max-w-[1400px] mx-auto">
+                    <div className="max-w-350 mx-auto">
                         <Routes>
                             <Route path="/cakes" element={<AdminCakePage />} />
                             <Route path="/cakes/add" element={<AdminCakeAddPage />} />
@@ -156,14 +159,21 @@ export default function AdminPage() {
                             
                             <Route path="/" element={
                                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                                    <div className="flex items-center gap-3 mb-4">
-                                        <div className="h-[1px] w-8 bg-[#00AEEF]"></div>
-                                        <span className="text-[11px] font-black text-[#00AEEF] uppercase tracking-[0.4em]">Control Center</span>
+                                    <div className="flex items-center justify-between mb-8">
+                                        <div>
+                                            <div className="flex items-center gap-3 mb-4">
+                                                <div className="h-px w-8 bg-[#00AEEF]"></div>
+                                                <span className="text-[11px] font-black text-[#00AEEF] uppercase tracking-[0.4em]">Control Center</span>
+                                            </div>
+                                            <h1 className="text-5xl md:text-6xl font-[Playfair_Display] font-black text-gray-900 italic leading-tight">
+                                                Welcome back, <br />
+                                                <span className="text-[#00AEEF] not-italic font-[Inter] tracking-tighter">{user?.firstName}</span>
+                                            </h1>
+                                        </div>
+                                        <div>
+                                            <DownloadReportButton />
+                                        </div>
                                     </div>
-                                    <h1 className="text-5xl md:text-6xl font-[Playfair_Display] font-black text-gray-900 italic leading-tight">
-                                        Welcome back, <br />
-                                        <span className="text-[#00AEEF] not-italic font-[Inter] tracking-tighter">{user?.firstName}</span>
-                                    </h1>
 
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
                                         <div className="p-10 bg-white rounded-[3rem] border border-gray-100 shadow-[0_20px_50px_rgba(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgba(0,174,239,0.05)] transition-all duration-500 group">

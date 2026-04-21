@@ -14,6 +14,8 @@ export default function AdminCakeAddPage() {
         flavor: '',
         weight: '',
         quantity: '',
+        manufactureDate: '',
+        expiryDate: '',
     });
     const [imageFile, setImageFile] = useState(null);
     const [preview, setPreview] = useState(null);
@@ -55,6 +57,13 @@ export default function AdminCakeAddPage() {
         }
     };
 
+    const parseDateInput = (value) => {
+        if (!value) return null;
+
+        const parsed = new Date(`${value}T00:00:00`);
+        return Number.isNaN(parsed.getTime()) ? null : parsed;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!imageFile) return toast.error('Please upload an image.');
@@ -75,6 +84,13 @@ export default function AdminCakeAddPage() {
             return toast.error('Weight must be a positive value (no minus).');
         }
 
+        const manufactureDate = parseDateInput(formData.manufactureDate);
+        const expiryDate = parseDateInput(formData.expiryDate);
+
+        if (manufactureDate && expiryDate && expiryDate < manufactureDate) {
+            return toast.error('Expiry Date cannot be before Manufacture Date.');
+        }
+
         setIsLoading(true);
         const toastId = toast.loading('Creating your masterpiece...');
 
@@ -86,6 +102,8 @@ export default function AdminCakeAddPage() {
                 ...formData,
                 price: parsedPrice,
                 quantity: parsedQuantity,
+                manufactureDate: formData.manufactureDate || undefined,
+                expireDate: formData.expiryDate || undefined,
                 Image: [imageUrl], // Schema expects an array
             };
 
@@ -123,6 +141,22 @@ export default function AdminCakeAddPage() {
                 <input name="flavor" placeholder="Flavor (e.g. Chocolate)" onChange={handleChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" required />
                 <input name="weight" value={formData.weight} placeholder="Weight (e.g. 1kg)" onChange={handleWeightChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" required />
                 <input name="quantity" type="text" inputMode="numeric" value={formData.quantity} placeholder="Stock Quantity" onChange={handleQuantityChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" required />
+                <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-500 ml-1">Manufacture Date</label>
+                    <input name="manufactureDate" type="date" value={formData.manufactureDate} onChange={handleChange} className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none" />
+                </div>
+
+                <div className="flex flex-col">
+                    <label className="text-xs font-bold text-gray-500 ml-1">Expiry Date</label>
+                    <input
+                        name="expiryDate"
+                        type="date"
+                        value={formData.expiryDate}
+                        min={formData.manufactureDate || undefined}
+                        onChange={handleChange}
+                        className="p-3 border rounded-lg focus:ring-2 focus:ring-blue-400 outline-none"
+                    />
+                </div>
                 <textarea name="description" placeholder="Short Description..." onChange={handleChange} className="p-3 border rounded-lg md:col-span-2 outline-none h-24" required />
 
                 <button type="submit" disabled={isLoading} className="md:col-span-2 bg-gray-900 text-white p-4 rounded-lg font-semibold hover:bg-blue-600 transition-all disabled:opacity-50">

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Loader2, ShoppingBag, Star, Heart, ArrowRight } from "lucide-react";
+import { Loader2, ShoppingBag, Heart, ArrowRight } from "lucide-react";
 import Footer from "../components/Footer";
 
 export default function ShopPage() {
@@ -119,12 +119,6 @@ export default function ShopPage() {
                                             </div>
                                         </div>
                                         
-                                        {/* Rating Display */}
-                                        <div className="flex items-center gap-2 mt-3">
-                                            <Star size={14} className="fill-rose-400 text-rose-400" />
-                                            <span className="text-sm font-bold text-neutral-900">{cake.rating ? cake.rating.toFixed(1) : "0"}</span>
-                                            <span className="text-[10px] text-neutral-400 italic">(from reviews)</span>
-                                        </div>
                                     </div>
                                 </div>
                             ))}

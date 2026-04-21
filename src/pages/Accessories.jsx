@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
-import { Loader2, ShoppingBag, Star, ArrowRight, Package } from "lucide-react";
+import { Loader2, ShoppingBag, ArrowRight, Package } from "lucide-react";
 import Footer from "../components/Footer";
 
 export default function AccessoriesPage() {
@@ -123,12 +123,6 @@ export default function AccessoriesPage() {
                                             </div>
                                         </div>
                                         
-                                        {/* Rating Display */}
-                                        <div className="flex items-center gap-2 mt-3">
-                                            <Star size={14} className="fill-rose-400 text-rose-400" />
-                                            <span className="text-sm font-bold text-neutral-900">{item.rating ? item.rating.toFixed(1) : "0"}</span>
-                                            <span className="text-[10px] text-neutral-400 italic">(from reviews)</span>
-                                        </div>
                                     </div>
                                 </div>
                             ))}

@@ -9,7 +9,7 @@ export default function AdminCakeUpdatePage() {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '', altName: '', description: '', price: '',
-        category: '', flavor: '', weight: '', quantity: ''
+        category: '', flavor: '', weight: '', quantity: '', manufactureDate: '', expireDate: ''
     });
     const [preview, setPreview] = useState(null);
     const [imageFile, setImageFile] = useState(null);
@@ -53,7 +53,9 @@ export default function AdminCakeUpdatePage() {
                 setFormData({
                     name: cakeData.name || '', altName: cakeData.altName || '', description: cakeData.description || '',
                     price: cakeData.price || '', category: cakeData.category || '', flavor: cakeData.flavor || '',
-                    weight: cakeData.weight || '', quantity: cakeData.quantity || ''
+                    weight: cakeData.weight || '', quantity: cakeData.quantity || '',
+                    manufactureDate: cakeData.manufactureDate ? new Date(cakeData.manufactureDate).toISOString().split('T')[0] : '',
+                    expireDate: cakeData.expireDate ? new Date(cakeData.expireDate).toISOString().split('T')[0] : ''
                 });
                 setPreview(cakeData.Image?.[0] || null); // Schema stores Image as an array
             } catch (error) {
@@ -107,6 +109,8 @@ export default function AdminCakeUpdatePage() {
                 ...formData,
                 price: parsedPrice,
                 quantity: parsedQuantity,
+                manufactureDate: formData.manufactureDate || undefined,
+                expireDate: formData.expireDate || undefined,
                 Image: [finalImageUrl]
             };
 
@@ -154,6 +158,12 @@ export default function AdminCakeUpdatePage() {
 
                 <div className="flex flex-col md:col-span-2"><label className="text-xs font-bold text-gray-500 ml-1">Stock Quantity</label>
                 <input name="quantity" type="text" inputMode="numeric" value={formData.quantity} onChange={handleQuantityChange} className="p-3 border rounded-lg" required /></div>
+
+                <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 ml-1">Date of Manufacture</label>
+                <input name="manufactureDate" type="date" value={formData.manufactureDate} onChange={handleChange} className="p-3 border rounded-lg" /></div>
+
+                <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 ml-1">Expiry Date</label>
+                <input name="expireDate" type="date" value={formData.expireDate} onChange={handleChange} className="p-3 border rounded-lg" /></div>
 
                 <textarea name="description" value={formData.description} onChange={handleChange} className="p-3 border rounded-lg md:col-span-2 h-24" required />
 

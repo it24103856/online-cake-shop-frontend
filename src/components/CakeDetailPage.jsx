@@ -15,6 +15,20 @@ export default function CakeDetailPage() {
     const [addingToCart, setAddingToCart] = useState(false);
     const [activeImg, setActiveImg] = useState("");
 
+    const formatDate = (value) => {
+        if (!value) return "Not specified";
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "Not specified";
+
+        return date.toLocaleDateString("en-GB", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+            timeZone: "UTC",
+        });
+    };
+
     useEffect(() => {
         fetchCake();
     }, [id]);
@@ -160,6 +174,17 @@ export default function CakeDetailPage() {
                                 <p className={`text-sm font-bold mt-1 ${cake.quantity < 5 ? "text-rose-500" : "text-emerald-500"}`}>
                                     {cake.quantity > 0 ? `${cake.quantity} in Stock` : "Sold Out"}
                                 </p>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 rounded-2xl bg-white border border-neutral-100 p-5 shadow-sm">
+                            <div>
+                                <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest mb-1">Date of Manufacture</p>
+                                <p className="text-sm font-semibold text-neutral-800">{formatDate(cake.manufactureDate)}</p>
+                            </div>
+                            <div>
+                                <p className="text-[10px] text-neutral-400 uppercase font-bold tracking-widest mb-1">Expiry Date</p>
+                                <p className="text-sm font-semibold text-neutral-800">{formatDate(cake.expireDate)}</p>
                             </div>
                         </div>
 

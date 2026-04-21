@@ -17,7 +17,7 @@ export default function OrderPage() {
     const [allItems, setAllItems] = useState([]);
     
     const [formData, setFormData] = useState({
-        name: "", email: "", phone: "", city: "", address: "", notes: ""
+        name: "", email: "", phone: "", city: "", address: "", notes: "", deliveryDate: ""
     });
     const [isEditingAddress, setIsEditingAddress] = useState(false);
 
@@ -150,6 +150,15 @@ export default function OrderPage() {
 
     const handleInputChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    const formatDateForInput = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+    };
+
+    const todayValue = formatDateForInput(new Date());
+
     // --- Main change is here ---
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -168,6 +177,20 @@ export default function OrderPage() {
         const phoneRegex = /^[0-9]{10}$/;
         if (!phoneRegex.test(formData.phone)) {
             toast.error("Please enter a valid 10-digit phone number.");
+            return;
+        }
+
+        if (!formData.deliveryDate) {
+            toast.error("Please select a delivery date.");
+            return;
+        }
+
+        const selectedDate = new Date(`${formData.deliveryDate}T00:00:00`);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (Number.isNaN(selectedDate.getTime()) || selectedDate < today) {
+            toast.error("Delivery date cannot be in the past.");
             return;
         }
 
@@ -193,7 +216,8 @@ export default function OrderPage() {
             totalPrice: total,
             status: "pending",
             paymentMethod: 'Bank Transfer', // As default
-            notes: formData.notes
+            notes: formData.notes,
+            deliveryDate: formData.deliveryDate
         };
 
         try {
@@ -311,6 +335,19 @@ export default function OrderPage() {
                                 className="w-full p-4 bg-neutral-50 rounded-2xl outline-none text-sm italic focus:ring-2 focus:ring-rose-100 transition-all text-neutral-900" 
                                 onChange={handleInputChange}
                             ></textarea>
+
+                            <div className="relative">
+                                <label className="block text-xs font-bold uppercase tracking-widest text-neutral-500 mb-2">Delivery Date</label>
+                                <input
+                                    type="date"
+                                    name="deliveryDate"
+                                    value={formData.deliveryDate}
+                                    min={todayValue}
+                                    required
+                                    onChange={handleInputChange}
+                                    className="w-full p-4 rounded-2xl bg-neutral-50 outline-none focus:ring-2 focus:ring-rose-100 transition-all text-neutral-900"
+                                />
+                            </div>
 
                             <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-black text-white rounded-2xl font-bold uppercase tracking-widest hover:bg-rose-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-neutral-200 disabled:bg-neutral-400">
                                 {isSubmitting ? <Loader2 className="animate-spin" /> : <CreditCard size={20} />}
