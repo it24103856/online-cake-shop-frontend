@@ -89,7 +89,7 @@ export default function UserData() {
                         {user.firstName} {user.lastName}
                     </span>
                     <span className="text-[10px] text-cyan-300 uppercase tracking-tighter font-bold opacity-80">
-                        {user.type || "Traveler"}
+                        {user.type || "Customer"}
                     </span>
                 </div>
                 
